@@ -7,6 +7,14 @@ from functools import lru_cache
 
 from .data import artifact
 
+_GALLERY_LABELS = {
+    "activation_splines": "Wordbank vocabulary",
+    "llm_explainer": "DistilGPT-2 prompts",
+    "sae_superposition": "Sarcasm DistilBERT SAE",
+    "relative_reps": "Kiki-Bouba OpenCLIP",
+    "layerwise_readout": "OASIS + SimpleShapes ViT",
+}
+
 
 @lru_cache(maxsize=1)
 def _all_samples() -> dict:
@@ -22,5 +30,9 @@ def widget_sample(name: str) -> dict:
 
 
 def gallery_samples() -> dict:
-    """Return all precomputed real-data widget payloads for the local widget gallery."""
-    return dict(_all_samples())
+    """Return labeled real-data widget payloads for ``DL4HL-Widgets.html``."""
+    raw = _all_samples()
+    return {
+        name: {"label": _GALLERY_LABELS.get(name, name), "data": payload}
+        for name, payload in raw.items()
+    }

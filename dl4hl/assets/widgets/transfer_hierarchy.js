@@ -17,6 +17,7 @@ DL4HL.register('transfer_hierarchy', function (root, cfg) {
   var regime = cfg.regime || 'probe';
   var nTrain = cfg.n || 120;
   var epoch = 10;
+  var ready = false;
 
   var STAGES = [
     { name: 'Stem', sub: 'oriented edges', params: '9.4K' },
@@ -232,6 +233,7 @@ DL4HL.register('transfer_hierarchy', function (root, cfg) {
   }
 
   function drawAll() {
+    if (!ready) return;
     drawLeft(); drawRight();
     var acc = valAccCurve(regime, nTrain, epoch);
     var trainableShare = regime === 'probe' ? '0.03% (3.1K / 11.2M)' : '100% (11.2M / 11.2M)';
@@ -247,6 +249,8 @@ DL4HL.register('transfer_hierarchy', function (root, cfg) {
   }
 
   left.draw = drawAll; right.draw = drawAll;
-  left.request();
+  ready = true;
+  tr.show(10);
+  left.request(); right.request();
   return { destroy: function () { tr.pause(); } };
 });

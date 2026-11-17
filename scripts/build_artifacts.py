@@ -229,10 +229,10 @@ def build_widget_samples(out_dir: Path) -> dict:
 
     # 1. Wordbank infant vocabulary curves from colinconwell/ml4hl
     wb_path = hf_hub_download(ML4HL_REPO, "artifacts/wordbank_cdi.parquet", repo_type="dataset", revision=ML4HL_REVISION)
-    wb = pd.read_parquet(wb_path)
+    wb = pd.read_parquet(wb_path).dropna(subset=["age", "vocab_share"])
     rng = np.random.default_rng(42)
     wb_sub = wb.sample(min(220, len(wb)), random_state=42).sort_values("age")
-    y_col = "prop_produces" if "prop_produces" in wb_sub.columns else [c for c in wb_sub.columns if c != "age"][0]
+    y_col = "vocab_share"
     samples["activation_splines"] = {
         "x": np.round(wb_sub["age"].to_numpy(dtype=float), 3).tolist(),
         "y": np.round(wb_sub[y_col].to_numpy(dtype=float), 4).tolist(),

@@ -1,12 +1,12 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "sections": [
-    { "id": "nonlinearity", "title": "1. Nonlinearity & Disentanglement" },
-    { "id": "tabular", "title": "2. Tabular Deep Learning" },
-    { "id": "vision", "title": "3. Vision & Feature Interpretability" },
-    { "id": "language", "title": "4. Language Models & Sparse Autoencoders" },
-    { "id": "multimodal", "title": "5. Multimodal Alignment & Relative Representations" },
-    { "id": "encoding", "title": "6. Encoding, Decoding, & Model Zoology" }
+    { "id": "nonlinearity", "num": 1, "title": "Nonlinearity & Disentanglement" },
+    { "id": "tabular", "num": 2, "title": "Tabular Deep Learning" },
+    { "id": "vision", "num": 3, "title": "Vision & Feature Interpretability" },
+    { "id": "language", "num": 4, "title": "Language Models & Sparse Autoencoders" },
+    { "id": "multimodal", "num": 5, "title": "Multimodal Alignment & Relative Representations" },
+    { "id": "encoding", "num": 6, "title": "Encoding, Decoding, & Model Zoology" }
   ],
   "widgets": [
     {
@@ -14,12 +14,14 @@
       "fig": 1,
       "section": "nonlinearity",
       "title": "Bending the line: nonlinear activations vs. linear collapse",
-      "hint": "Switch activation between Linear, ReLU, GELU, and Tanh · press play to optimize hidden hinges or drag knot handles along the axis",
+      "hint": "Switch activation between Linear, ReLU, GELU, and Tanh &middot; press play to optimize hidden hinges or drag knot handles along the axis",
+      "pitch": "Stacking linear units always collapses back into a single straight line. Inserting nonlinear hinges (ReLU, GELU, Tanh) lets hidden units bend locally around developmental curves.",
       "animated": true,
-      "data_mode": true,
+      "modes": ["sim", "data"],
+      "data_doc": "{x: number[], y: number[], xlabel?: string, ylabel?: string}",
       "params": [
         { "key": "units", "type": "int", "default": 6, "min": 1, "max": 12, "doc": "Number of hidden basis units" },
-        { "key": "activation", "type": "choice", "default": "relu", "choices": ["linear", "relu", "gelu", "tanh"], "doc": "Hidden activation family" }
+        { "key": "activation", "type": "choice", "default": "relu", "options": ["linear", "relu", "gelu", "tanh"], "doc": "Hidden activation family" }
       ]
     },
     {
@@ -27,12 +29,13 @@
       "fig": 2,
       "section": "nonlinearity",
       "title": "The XOR problem: folding space so one straight line suffices",
-      "hint": "Compare 0 hidden layers (linear) vs. 1 hidden layer · press play to train · scrub Fold morph to watch space crease",
+      "hint": "Compare 0 hidden layers (linear) vs. 1 hidden layer &middot; press play to train &middot; scrub Fold morph to watch space crease",
+      "pitch": "When class identity depends on an interaction (XOR or concentric rings), one hidden ReLU layer creases and folds the input plane so opposite quadrants land on the same side of a linear readout.",
       "animated": true,
-      "data_mode": false,
+      "modes": ["sim"],
       "params": [
         { "key": "hidden", "type": "int", "default": 4, "min": 2, "max": 8, "doc": "Hidden ReLU units" },
-        { "key": "pattern", "type": "choice", "default": "xor", "choices": ["xor", "rings"], "doc": "2D interaction dataset" }
+        { "key": "pattern", "type": "choice", "default": "xor", "options": ["xor", "rings"], "doc": "2D interaction dataset" }
       ]
     },
     {
@@ -40,11 +43,12 @@
       "fig": 3,
       "section": "nonlinearity",
       "title": "Untangling Christmas lights: progressive manifold disentanglement across depth",
-      "hint": "Press play or scrub Depth to travel from input layer L0 to L4 · increase Tangle turns to tighten the knot",
+      "hint": "Press play or scrub Depth to travel from input layer L0 to L4 &middot; increase Tangle turns to tighten the knot",
+      "pitch": "Two intertwined spiral strands cannot be separated by any flat cut in input space. Residual ReLU blocks loosen one loop of the knot per layer until a linear probe reads out 100%.",
       "animated": true,
-      "data_mode": false,
+      "modes": ["sim"],
       "params": [
-        { "key": "turns", "type": "float", "default": 1.35, "min": 0.6, "max": 1.9, "doc": "Spiral tangle tightness" }
+        { "key": "turns", "type": "float", "default": 1.35, "min": 0.6, "max": 1.9, "step": 0.05, "doc": "Spiral tangle tightness" }
       ]
     },
     {
@@ -52,9 +56,10 @@
       "fig": 4,
       "section": "tabular",
       "title": "Inside a tabular neural network: forward pass and error backpropagation",
-      "hint": "Press play or step to run forward + backward updates · adjust predictor sliders to test live inputs",
+      "hint": "Press play or step to run forward + backward updates &middot; adjust predictor sliders to test live inputs",
+      "pitch": "Structured predictors flow forward through weighted ReLU connections to produce a prediction, then propagate residual error backward so each weight updates in proportion to its credit.",
       "animated": true,
-      "data_mode": false,
+      "modes": ["sim"],
       "params": [
         { "key": "seed", "type": "int", "default": 19, "min": 1, "max": 99, "doc": "Random initialization seed" }
       ]
@@ -64,12 +69,13 @@
       "fig": 5,
       "section": "vision",
       "title": "Transfer learning: reusing a visual hierarchy instead of starting from noise",
-      "hint": "Switch regime between Frozen head, Full finetune, and Train from scratch · vary Labeled sample size N",
+      "hint": "Switch regime between Frozen head, Full finetune, and Train from scratch &middot; vary Labeled sample size N",
+      "pitch": "Pretrained backbones arrive with oriented edges, textures, and 3D part detectors intact. Freezing the trunk and fitting a linear head generalizes from small samples where scratch training overfits.",
       "animated": true,
-      "data_mode": false,
+      "modes": ["sim"],
       "params": [
-        { "key": "regime", "type": "choice", "default": "probe", "choices": ["probe", "finetune", "scratch"], "doc": "Transfer learning strategy" },
-        { "key": "n", "type": "int", "default": 120, "min": 24, "max": 720, "doc": "Number of labeled images" }
+        { "key": "regime", "type": "choice", "default": "probe", "options": ["probe", "finetune", "scratch"], "doc": "Transfer learning strategy" },
+        { "key": "n", "type": "int", "default": 120, "min": 24, "max": 720, "step": 24, "doc": "Number of labeled images" }
       ]
     },
     {
@@ -77,11 +83,13 @@
       "fig": 6,
       "section": "language",
       "title": "(GPT-Style) LLMs: from subword tokens to next-token trajectories",
-      "hint": "Press play to trace tokens through attention layers · drag the 3D sphere to rotate · adjust Temperature",
+      "hint": "Press play to trace tokens through attention layers &middot; drag the 3D sphere to rotate &middot; adjust Temperature",
+      "pitch": "Words split into subword tokens and integer IDs, map to vectors, route context through causal self-attention, and trace a trajectory on the unit sphere toward the next token.",
       "animated": true,
-      "data_mode": true,
+      "modes": ["sim", "data"],
+      "data_doc": "{cases: {prompt, tokens, ids, candidates, logits, cand_xyz, traj_xyz, attentions}[]}",
       "params": [
-        { "key": "temperature", "type": "float", "default": 0.8, "min": 0.2, "max": 1.8, "doc": "Softmax sampling temperature" }
+        { "key": "temperature", "type": "float", "default": 0.8, "min": 0.2, "max": 1.8, "step": 0.05, "doc": "Softmax sampling temperature" }
       ]
     },
     {
@@ -89,9 +97,11 @@
       "fig": 7,
       "section": "language",
       "title": "Polysemantic neurons vs. monosemantic Sparse Autoencoder (SAE) latents",
-      "hint": "Click any concept spoke on the pentagon (or mix two) · explore discovered SAE headline latents on the right",
+      "hint": "Click any concept spoke on the pentagon (or mix two) &middot; explore discovered SAE headline latents on the right",
+      "pitch": "Networks pack more sparse concepts than neurons via superposition, making single neurons polysemantic. A TopK Sparse Autoencoder expands dense activations into monosemantic latents.",
       "animated": false,
-      "data_mode": true,
+      "modes": ["sim", "data"],
+      "data_doc": "{features: {id, firing_rate, sarcastic_share, top_headlines}[]}",
       "params": [
         { "key": "top_k", "type": "int", "default": 1, "min": 1, "max": 3, "doc": "Active dictionary features kept per input" }
       ]
@@ -101,11 +111,13 @@
       "fig": 8,
       "section": "multimodal",
       "title": "Relative representations: linear classification over natural-language anchor queries",
-      "hint": "Toggle anchor queries in or out of the subspace · drag the 3D sphere to inspect image and query geometry",
+      "hint": "Toggle anchor queries in or out of the subspace &middot; drag the 3D sphere to inspect image and query geometry",
+      "pitch": "Projecting CLIP image embeddings onto their cosine similarities with natural-language anchor queries creates a low-dimensional subspace whose linear classifier weights read out over words.",
       "animated": false,
-      "data_mode": true,
+      "modes": ["sim", "data"],
+      "data_doc": "{queries: string[], query_xyz: number[][], img_xyz: number[][], sim: number[][], y: int[], class_names: string[]}",
       "params": [
-        { "key": "penalty", "type": "float", "default": 0.8, "min": 0.1, "max": 12.0, "doc": "Ridge regularization penalty" }
+        { "key": "penalty", "type": "float", "default": 0.8, "min": 0.1, "max": 12.0, "step": 0.2, "doc": "Ridge regularization penalty" }
       ]
     },
     {
@@ -113,11 +125,13 @@
       "fig": 9,
       "section": "encoding",
       "title": "Encoding and decoding across network depth: probing a Vision Transformer",
-      "hint": "Press play or scrub Layer to move from the patch stem to the final norm · toggle right view between Beauty scatter and Layer RDM",
+      "hint": "Press play or scrub Layer to move from the patch stem to the final norm &middot; toggle right view between Beauty scatter and Layer RDM",
+      "pitch": "Cross-validated RidgeCV encoding on OASIS aesthetics and linear decoding on SimpleShapes across Vision Transformer blocks, paired with held-out scatters and layer RDMs.",
       "animated": true,
-      "data_mode": true,
+      "modes": ["sim", "data"],
+      "data_doc": "{layers: string[], oasis_curves: {beauty, valence, arousal}, shapes_curve: number[], beauty_scatter: object, rdms: object}",
       "params": [
-        { "key": "panel", "type": "choice", "default": "scatter", "choices": ["scatter", "rdm"], "doc": "Right-hand inspection panel" }
+        { "key": "panel", "type": "choice", "default": "scatter", "options": ["scatter", "rdm"], "doc": "Right-hand inspection panel" }
       ]
     },
     {
@@ -125,12 +139,13 @@
       "fig": 10,
       "section": "encoding",
       "title": "Types of deep learning models: the neuroconnectionist trifecta",
-      "hint": "Switch Learning objective and press play to watch points organize on the sphere · vary one Trifecta factor on the right",
+      "hint": "Switch Learning objective and press play to watch points organize on the sphere &middot; vary one Trifecta factor on the right",
+      "pitch": "Compare how supervised, autoencoder, puzzle, contrastive, and CLIP objectives sculpt the hypersphere, and design controlled model-zoo comparisons across diet, architecture, and task.",
       "animated": true,
-      "data_mode": false,
+      "modes": ["sim"],
       "params": [
-        { "key": "objective", "type": "choice", "default": "contrastive", "choices": ["supervised", "autoencode", "puzzle", "contrastive", "clip"], "doc": "Hypersphere training signal" },
-        { "key": "vary", "type": "choice", "default": "task", "choices": ["input", "arch", "task"], "doc": "Manipulated trifecta dimension" }
+        { "key": "objective", "type": "choice", "default": "contrastive", "options": ["supervised", "autoencode", "puzzle", "contrastive", "clip"], "doc": "Hypersphere training signal" },
+        { "key": "vary", "type": "choice", "default": "task", "options": ["input", "arch", "task"], "doc": "Manipulated trifecta dimension" }
       ]
     }
   ]

@@ -20,6 +20,7 @@ DL4HL.register('trifecta_explorer', function (root, cfg) {
   var varyAxis = cfg.vary || 'task';
   var prog = 1.0; // 0..1 training progression
   var yaw = -0.42, pitch = 0.28, dragOrigin = null;
+  var ready = false;
 
   /* 36 instances (12 in each of 3 latent families, plus an augmented twin per instance) */
   var N = 24, initPts = [], initTwins = [], fam = [];
@@ -289,6 +290,7 @@ DL4HL.register('trifecta_explorer', function (root, cfg) {
   }
 
   function drawAll() {
+    if (!ready) return;
     drawLeft(); drawRight();
     var exp = EXPERIMENTS[varyAxis];
     read.innerHTML = '<span class="k">sphere objective</span> ' + taskMode +
@@ -297,6 +299,8 @@ DL4HL.register('trifecta_explorer', function (root, cfg) {
   }
 
   left.draw = drawAll; right.draw = drawAll;
-  left.request();
+  ready = true;
+  tr.show(60);
+  left.request(); right.request();
   return { destroy: function () { tr.pause(); } };
 });

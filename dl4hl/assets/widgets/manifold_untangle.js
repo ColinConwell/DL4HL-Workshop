@@ -19,6 +19,7 @@ DL4HL.register('manifold_untangle', function (root, cfg) {
   var DEPTH = 4;
   var turns = cfg.turns || 1.35;
   var depthPos = 0; // continuous 0..4
+  var ready = false;
   var strands = [[], []]; // each: array of 5 layer coordinate snapshots [L0..L4] of length N_PER
   var layerAcc = [0.5, 0.65, 0.8, 0.92, 1.0];
   var finalLine = { w0: 1, w1: 0, b: 0 };
@@ -345,6 +346,7 @@ DL4HL.register('manifold_untangle', function (root, cfg) {
   }
 
   function drawAll() {
+    if (!ready) return;
     var liveAcc = drawLeft() || layerAcc[0];
     drawRight();
     var stageMsg = depthPos < 0.4
@@ -360,6 +362,8 @@ DL4HL.register('manifold_untangle', function (root, cfg) {
 
   buildAndSolve();
   left.draw = drawAll; right.draw = drawAll;
-  left.request();
+  ready = true;
+  tr.show(0);
+  left.request(); right.request();
   return { destroy: function () { tr.pause(); } };
 });

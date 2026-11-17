@@ -1,6 +1,6 @@
 {
   "repo": "colinconwell/dl4hl",
-  "revision": "fa817965eb8afcdc6c8e494bb3021a7793b5d50a",
+  "revision": "ecfccc300a59ee5c128118b565e6f92c3c5602d4",
   "files": {
     "manifest.json": "ccb8da3f9ef3613dc130259eac9a3d26290f3735bd5a30f55f2939180ad73a28",
     "oasis_images.zip": "793929c109cb82b287edef04d3bfdc32ab30e2eafaadfde458bbdb017d6a99c2",
@@ -11,7 +11,7 @@
     "sarcasm_headlines.parquet": "7de165002d9423ad48c2eb8e0dc1cce31910fa84b0cced3f23c8f4a5f581bd12",
     "simple_shapes.zip": "e2d1aed25778d06a31d93934621b1eceef1c6a543a0c54a4435f48cf65f9a3f1",
     "simple_shapes_meta.parquet": "861a540907eafe05547e73fe02db2d9cb37745919ab44a60640cc2e92ce1a49e",
-    "widget_samples.json": "af3a489d4677a9a8a17ee924a894f86c4b3d59cdee63b68854a8d7c39df581e2"
+    "widget_samples.json": "5be81f6c4b2fa9ccc32a13826580d51c13b360c5dfd0e33edee2db349335803d"
   },
   "ml4hl": {
     "repo": "colinconwell/ml4hl",

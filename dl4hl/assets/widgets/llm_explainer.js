@@ -65,6 +65,7 @@ DL4HL.register('llm_explainer', function (root, cfg) {
   var headIdx = 0;
   var temp = cfg.temperature || 0.8;
   var yaw = -0.45, pitch = 0.28, dragOrigin = null;
+  var ready = false;
 
   function curCase() { return cases[caseIdx % cases.length]; }
 
@@ -274,6 +275,7 @@ DL4HL.register('llm_explainer', function (root, cfg) {
   }
 
   function drawAll() {
+    if (!ready) return;
     drawLeft(); drawRight();
     var c = curCase();
     var scaled = c.logits.map(function (l) { return l * (0.25 + 0.75 * (stepPos / 4)); });
@@ -284,6 +286,8 @@ DL4HL.register('llm_explainer', function (root, cfg) {
   }
 
   left.draw = drawAll; right.draw = drawAll;
-  left.request();
+  ready = true;
+  tr.show(80);
+  left.request(); right.request();
   return { destroy: function () { tr.pause(); } };
 });

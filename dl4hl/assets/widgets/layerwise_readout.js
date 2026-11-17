@@ -57,6 +57,7 @@ DL4HL.register('layerwise_readout', function (root, cfg) {
   var L = D.layers.length;
   var curL = L - 1;
   var rightMode = cfg.panel || 'scatter';
+  var ready = false;
 
   /* ─── DOM ─── */
   var split = M.split(root, 1.25);
@@ -216,6 +217,7 @@ DL4HL.register('layerwise_readout', function (root, cfg) {
   }
 
   function drawAll() {
+    if (!ready) return;
     drawLeft(); drawRight();
     var lbl = D.layers[curL];
     read.innerHTML = '<span class="k">layer</span> <b>' + M.esc(lbl) + '</b>' +
@@ -226,6 +228,8 @@ DL4HL.register('layerwise_readout', function (root, cfg) {
   }
 
   left.draw = drawAll; right.draw = drawAll;
-  left.request();
+  ready = true;
+  tr.show(L - 1);
+  left.request(); right.request();
   return { destroy: function () { tr.pause(); } };
 });

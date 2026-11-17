@@ -37,7 +37,12 @@ _REQ = [
 ]
 missing = [pkg for mod, pkg in _REQ if importlib.util.find_spec(mod) is None]
 if missing:
-    subprocess.run([sys.executable, "-m", "pip", "install", "-q", *missing], check=True)'''
+    subprocess.run([sys.executable, "-m", "pip", "install", "-q", *missing], check=True)
+if importlib.util.find_spec("cv2") is not None:
+    try:
+        import cv2 as _cv2  # noqa: F401
+    except ImportError:
+        subprocess.run([sys.executable, "-m", "pip", "install", "-q", "--force-reinstall", "--no-deps", "opencv-python-headless"], check=True)'''
 
 
 def front_matter(text: str) -> tuple[dict, str]:
