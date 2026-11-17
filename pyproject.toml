@@ -1,0 +1,58 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dl4hl"
+version = "0.1.0"
+description = "Interactive widgets, simulators, and dataset loaders for the DL-4-HL (Deep Learning for Human Learners) tutorial."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Colin Conwell", email = "conwell@mit.edu" }]
+license = { text = "MIT" }
+dependencies = [
+  "numpy>=1.26",
+  "pandas>=2.0",
+  "ipython>=7.34",
+  "huggingface_hub>=0.24",
+  "pyarrow>=14",
+]
+
+[project.optional-dependencies]
+tutorial = [
+  "scikit-learn>=1.6",
+  "scipy>=1.11",
+  "matplotlib>=3.8",
+  "seaborn>=0.13",
+  "pillow>=10",
+  "torch>=2.3",
+  "torchvision>=0.18",
+  "transformers>=4.49,<5",
+  "accelerate>=1.0",
+  "peft>=0.14",
+  "datasets>=3.0",
+  "open-clip-torch>=2.26",
+  "torchinfo>=1.8",
+  "torchlens>=0.1.12",
+  "horama>=0.1.2",
+  "overcomplete>=0.2",
+  "skorch>=1.0",
+  "lightning>=2.4",
+  "ipykernel>=6.29",
+  "jupyter>=1.0",
+  "nbformat>=5.10",
+]
+artifacts = [
+  "pillow>=10",
+  "torch>=2.3",
+  "torchvision>=0.18",
+  "transformers>=4.49,<5",
+  "open-clip-torch>=2.26",
+  "overcomplete>=0.2",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["dl4hl"]
+
+[tool.hatch.build.targets.sdist]
+include = ["dl4hl", "README.md", "pyproject.toml"]

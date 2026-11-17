@@ -1,0 +1,18 @@
+default:
+    @just --list
+setup:
+    uv venv --python 3.12
+    VIRTUAL_ENV=.venv uv pip install -e ".[tutorial]"
+render:
+    .venv/bin/python scripts/build_theme.py
+    PATH="$PWD/.venv/bin:$PATH" quarto render DL4HL-Tutorial.qmd --no-execute-daemon
+colab:
+    .venv/bin/python scripts/to_colab.py
+colab-pinned: colab
+    bash scripts/colab_pinned.sh DL4HL-Tutorial.ipynb
+check:
+    .venv/bin/python scripts/check_data_release.py
+    .venv/bin/python scripts/check_science.py
+    .venv/bin/python scripts/check_outputs.py
+site:
+    .venv/bin/python scripts/build_workshop.py

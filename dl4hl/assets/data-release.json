@@ -1,0 +1,31 @@
+{
+  "repo": "colinconwell/dl4hl",
+  "revision": "fa817965eb8afcdc6c8e494bb3021a7793b5d50a",
+  "files": {
+    "manifest.json": "ccb8da3f9ef3613dc130259eac9a3d26290f3735bd5a30f55f2939180ad73a28",
+    "oasis_images.zip": "793929c109cb82b287edef04d3bfdc32ab30e2eafaadfde458bbdb017d6a99c2",
+    "oasis_ratings.parquet": "3ac9aebdc4e65452cecc378eae0534d6a51944772409f037aa16451b0342562c",
+    "parametric_kibos.zip": "26a625093f5bafd15681952ce74d3d4f66d79ce31b016d3936df042ff1e8cf44",
+    "parametric_kibos_meta.parquet": "325fbbd24ba90822d2f07f15bf5fbf1a1d06cd83dbc4ff71883ea6647babf858",
+    "sarcasm_embeddings.npz": "f100894d20d39b0461a18ffd23c04bb99848fb7563ce590501688bd2ec83a1b9",
+    "sarcasm_headlines.parquet": "7de165002d9423ad48c2eb8e0dc1cce31910fa84b0cced3f23c8f4a5f581bd12",
+    "simple_shapes.zip": "e2d1aed25778d06a31d93934621b1eceef1c6a543a0c54a4435f48cf65f9a3f1",
+    "simple_shapes_meta.parquet": "861a540907eafe05547e73fe02db2d9cb37745919ab44a60640cc2e92ce1a49e",
+    "widget_samples.json": "af3a489d4677a9a8a17ee924a894f86c4b3d59cdee63b68854a8d7c39df581e2"
+  },
+  "ml4hl": {
+    "repo": "colinconwell/ml4hl",
+    "revision": "a1360a0d33a7ebb77f0f14da5339cd7488e2969b",
+    "files": {
+      "dollar_street_emb.npy": "b51f86f6c190b151cb532339b5e7164179d0c6f72d4d4c27a377a5c266edbfb5",
+      "dollar_street_meta.parquet": "4aa4e467b0050aba22d00b851aef5ce20a251c3e7a6c1e29beea1fa318081414",
+      "dollar_street_thumbs.npy": "2ece4327aa61c876e63631c2c7579c7b687025aadf5dceb0debc2f3dcbb1c383",
+      "household_survey.parquet": "10d912b48bd1125f95dab4f6f5e26cf85fb7b4d2d744856060aa48d7e6a25380",
+      "music_emotions.parquet": "9b120b064fefa8daada577c21596e7562b4ac633633609072ea99d47e3d3fe5f",
+      "musiclab_ids.parquet": "1f1b3270302237259f53b6f286661c383448200777964e82759d6373cfcde52c",
+      "musiclab_nhs.parquet": "7065cdb32726484ec38aaa271f33b8fcc0ecb94e15f3fa8b719860fc90b6b979",
+      "perinatal_dev.parquet": "a75d3d928999f92aa155040cf4af4e384b2dd3da82c7c9c41332fa8cd7b75530",
+      "wordbank_cdi.parquet": "9762584489a8c74e7ac22891d71c04315b3a8919bb520efa76479667a5ec48b8"
+    }
+  }
+}

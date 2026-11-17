@@ -1,0 +1,137 @@
+{
+  "version": "0.1.0",
+  "sections": [
+    { "id": "nonlinearity", "title": "1. Nonlinearity & Disentanglement" },
+    { "id": "tabular", "title": "2. Tabular Deep Learning" },
+    { "id": "vision", "title": "3. Vision & Feature Interpretability" },
+    { "id": "language", "title": "4. Language Models & Sparse Autoencoders" },
+    { "id": "multimodal", "title": "5. Multimodal Alignment & Relative Representations" },
+    { "id": "encoding", "title": "6. Encoding, Decoding, & Model Zoology" }
+  ],
+  "widgets": [
+    {
+      "name": "activation_splines",
+      "fig": 1,
+      "section": "nonlinearity",
+      "title": "Bending the line: nonlinear activations vs. linear collapse",
+      "hint": "Switch activation between Linear, ReLU, GELU, and Tanh · press play to optimize hidden hinges or drag knot handles along the axis",
+      "animated": true,
+      "data_mode": true,
+      "params": [
+        { "key": "units", "type": "int", "default": 6, "min": 1, "max": 12, "doc": "Number of hidden basis units" },
+        { "key": "activation", "type": "choice", "default": "relu", "choices": ["linear", "relu", "gelu", "tanh"], "doc": "Hidden activation family" }
+      ]
+    },
+    {
+      "name": "xor_fold",
+      "fig": 2,
+      "section": "nonlinearity",
+      "title": "The XOR problem: folding space so one straight line suffices",
+      "hint": "Compare 0 hidden layers (linear) vs. 1 hidden layer · press play to train · scrub Fold morph to watch space crease",
+      "animated": true,
+      "data_mode": false,
+      "params": [
+        { "key": "hidden", "type": "int", "default": 4, "min": 2, "max": 8, "doc": "Hidden ReLU units" },
+        { "key": "pattern", "type": "choice", "default": "xor", "choices": ["xor", "rings"], "doc": "2D interaction dataset" }
+      ]
+    },
+    {
+      "name": "manifold_untangle",
+      "fig": 3,
+      "section": "nonlinearity",
+      "title": "Untangling Christmas lights: progressive manifold disentanglement across depth",
+      "hint": "Press play or scrub Depth to travel from input layer L0 to L4 · increase Tangle turns to tighten the knot",
+      "animated": true,
+      "data_mode": false,
+      "params": [
+        { "key": "turns", "type": "float", "default": 1.35, "min": 0.6, "max": 1.9, "doc": "Spiral tangle tightness" }
+      ]
+    },
+    {
+      "name": "mlp_backprop",
+      "fig": 4,
+      "section": "tabular",
+      "title": "Inside a tabular neural network: forward pass and error backpropagation",
+      "hint": "Press play or step to run forward + backward updates · adjust predictor sliders to test live inputs",
+      "animated": true,
+      "data_mode": false,
+      "params": [
+        { "key": "seed", "type": "int", "default": 19, "min": 1, "max": 99, "doc": "Random initialization seed" }
+      ]
+    },
+    {
+      "name": "transfer_hierarchy",
+      "fig": 5,
+      "section": "vision",
+      "title": "Transfer learning: reusing a visual hierarchy instead of starting from noise",
+      "hint": "Switch regime between Frozen head, Full finetune, and Train from scratch · vary Labeled sample size N",
+      "animated": true,
+      "data_mode": false,
+      "params": [
+        { "key": "regime", "type": "choice", "default": "probe", "choices": ["probe", "finetune", "scratch"], "doc": "Transfer learning strategy" },
+        { "key": "n", "type": "int", "default": 120, "min": 24, "max": 720, "doc": "Number of labeled images" }
+      ]
+    },
+    {
+      "name": "llm_explainer",
+      "fig": 6,
+      "section": "language",
+      "title": "(GPT-Style) LLMs: from subword tokens to next-token trajectories",
+      "hint": "Press play to trace tokens through attention layers · drag the 3D sphere to rotate · adjust Temperature",
+      "animated": true,
+      "data_mode": true,
+      "params": [
+        { "key": "temperature", "type": "float", "default": 0.8, "min": 0.2, "max": 1.8, "doc": "Softmax sampling temperature" }
+      ]
+    },
+    {
+      "name": "sae_superposition",
+      "fig": 7,
+      "section": "language",
+      "title": "Polysemantic neurons vs. monosemantic Sparse Autoencoder (SAE) latents",
+      "hint": "Click any concept spoke on the pentagon (or mix two) · explore discovered SAE headline latents on the right",
+      "animated": false,
+      "data_mode": true,
+      "params": [
+        { "key": "top_k", "type": "int", "default": 1, "min": 1, "max": 3, "doc": "Active dictionary features kept per input" }
+      ]
+    },
+    {
+      "name": "relative_reps",
+      "fig": 8,
+      "section": "multimodal",
+      "title": "Relative representations: linear classification over natural-language anchor queries",
+      "hint": "Toggle anchor queries in or out of the subspace · drag the 3D sphere to inspect image and query geometry",
+      "animated": false,
+      "data_mode": true,
+      "params": [
+        { "key": "penalty", "type": "float", "default": 0.8, "min": 0.1, "max": 12.0, "doc": "Ridge regularization penalty" }
+      ]
+    },
+    {
+      "name": "layerwise_readout",
+      "fig": 9,
+      "section": "encoding",
+      "title": "Encoding and decoding across network depth: probing a Vision Transformer",
+      "hint": "Press play or scrub Layer to move from the patch stem to the final norm · toggle right view between Beauty scatter and Layer RDM",
+      "animated": true,
+      "data_mode": true,
+      "params": [
+        { "key": "panel", "type": "choice", "default": "scatter", "choices": ["scatter", "rdm"], "doc": "Right-hand inspection panel" }
+      ]
+    },
+    {
+      "name": "trifecta_explorer",
+      "fig": 10,
+      "section": "encoding",
+      "title": "Types of deep learning models: the neuroconnectionist trifecta",
+      "hint": "Switch Learning objective and press play to watch points organize on the sphere · vary one Trifecta factor on the right",
+      "animated": true,
+      "data_mode": false,
+      "params": [
+        { "key": "objective", "type": "choice", "default": "contrastive", "choices": ["supervised", "autoencode", "puzzle", "contrastive", "clip"], "doc": "Hypersphere training signal" },
+        { "key": "vary", "type": "choice", "default": "task", "choices": ["input", "arch", "task"], "doc": "Manipulated trifecta dimension" }
+      ]
+    }
+  ]
+}

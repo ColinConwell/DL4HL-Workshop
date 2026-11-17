@@ -1,0 +1,20 @@
+# ADE Cache
+.vscode/
+.cursor/
+.codex/
+.claude/
+# Runtime and secrets
+.env
+.env.*
+!.env.example
+mcp.json
+.venv/
+.cache/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.quarto/
+data/
+_site/
+DL4HL-Tutorial_files/
+.DS_Store
