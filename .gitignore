@@ -17,4 +17,5 @@ __pycache__/
 data/
 _site/
 DL4HL-Tutorial_files/
+spectrum_decorrelated.npy
 .DS_Store

@@ -2,10 +2,10 @@
   "schema": 1,
   "files": {
     ".github/workflows/pages.yml": "8b50168e7e8fe9853564cffd3f71df7913e9aa31273bc92f7a595a8f5d4f9b1f",
-    ".gitignore": "566cdf14ad1fe40bee2a3ffa3a162c804ef2d67531385936293aa2374894beec",
+    ".gitignore": "697afb60b03c16a4b3a19d46ebb5007dc13e46eb24b55d574156a4d29c745af1",
     "AGENTS.md": "45a3d575ee195e1de14b5447c5ffad426f1edb323414e96a443bd28eab45d235",
     "DL4HL-Tutorial.html": "220ae3837143f67f9b83dd8e3e1b8d5472f4965ae2878d67cac9e7debcc6d7e2",
-    "DL4HL-Tutorial.ipynb": "9121ad74ff6c6112b5de62260f7d4e5718bc7c83c96cd000d1c029cf60962a91",
+    "DL4HL-Tutorial.ipynb": "b53894b69e170f7c0008bdcf4e8cf1c1909dc28dace9a34f41532731c43640d2",
     "DL4HL-Tutorial.qmd": "b9c12967403dfc31aebe119460c67df1c9d679f2644af163df1f4aa54ca7aab3",
     "JUSTFile": "bf9114f0d5177d5458af2da4dd7e2d1895da273830ed6d10db3c64278539abc9",
     "LICENSE": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
