@@ -113,11 +113,11 @@ jobs:
         with:
           name: site
           path: _site
-      - name: Publish to gh-pages
+      - name: Publish to Pages
         if: ${{ env.ACT != 'true' }}
         uses: peaceiris/actions-gh-pages@329bcc8f12caed2cefe5a5b80781499a6f3b361b # v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./_site
-          publish_branch: gh-pages
+          publish_branch: pages
           force_orphan: false
