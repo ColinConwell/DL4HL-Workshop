@@ -238,14 +238,14 @@ DL4HL.register('transfer_hierarchy', function (root, cfg) {
     var acc = valAccCurve(regime, nTrain, epoch);
     var trainableShare = regime === 'probe' ? '0.03% (3.1K / 11.2M)' : '100% (11.2M / 11.2M)';
     var msg = regime === 'probe'
-      ? '<span class="g">linear probing tunes only the 3.1K head weights while keeping pretrained 3D shape features intact</span>'
+      ? '<span class="g">Linear probing tunes only the 3.1K head weights while keeping pretrained 3D shape features intact.</span>'
       : regime === 'finetune'
-        ? '<span class="b">full finetuning adapts every block, pulling ahead once N is large enough to avoid overfitting</span>'
-        : '<span class="r">from scratch must re-invent edges and surfaces from ' + nTrain + ' images alone</span>';
+        ? '<span class="b">Full finetuning adapts every block, pulling ahead once N is large enough to avoid overfitting.</span>'
+        : '<span class="r">Training from scratch must re-invent edges and surfaces from ' + nTrain + ' images alone.</span>';
     read.innerHTML = '<span class="k">epoch</span> ' + epoch +
       '<span class="sep">&middot;</span><span class="k">trainable params</span> ' + trainableShare +
       '<span class="sep">&middot;</span><span class="k">val accuracy (N=' + nTrain + ')</span> ' + Math.round(acc * 100) + '%' +
-      '<span class="sep">&middot;</span>' + msg;
+      '<div class="wread-interp">' + msg + '</div>';
   }
 
   left.draw = drawAll; right.draw = drawAll;

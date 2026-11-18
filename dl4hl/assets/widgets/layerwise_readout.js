@@ -9,7 +9,7 @@ DL4HL.register('layerwise_readout', function (root, cfg) {
   var M = DL4HL, C = M.C;
   M.frame(root, cfg, {
     fig: 9,
-    title: 'Encoding and decoding across network depth: probing a Vision Transformer',
+    title: 'Encoding & decoding across network depth: probing a Vision Transformer',
     hint: 'Press play or scrub Layer to move from the patch stem to the final norm &middot; toggle right view between Beauty scatter and Layer RDM'
   });
 

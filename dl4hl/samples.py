@@ -4,12 +4,15 @@ from __future__ import annotations
 
 import json
 from functools import lru_cache
+from pathlib import Path
 
 from .data import artifact
 
+ASSETS = Path(__file__).absolute().parent / "assets"  # not resolve(): Hub snapshots are symlinks into blobs/
+
 _GALLERY_LABELS = {
     "activation_splines": "Wordbank vocabulary",
-    "llm_explainer": "DistilGPT-2 prompts",
+    "llm_explainer": "GPT-2 (12 heads)",
     "sae_superposition": "Sarcasm DistilBERT SAE",
     "relative_reps": "Kiki-Bouba OpenCLIP",
     "layerwise_readout": "OASIS + SimpleShapes ViT",
@@ -18,7 +21,11 @@ _GALLERY_LABELS = {
 
 @lru_cache(maxsize=1)
 def _all_samples() -> dict:
-    return json.loads(artifact("widget_samples.json").read_text())
+    data = dict(json.loads(artifact("widget_samples.json").read_text()))
+    llm_local = ASSETS / "llm_gpt2_cases.json"
+    if llm_local.exists():
+        data["llm_explainer"] = json.loads(llm_local.read_text())
+    return data
 
 
 def widget_sample(name: str) -> dict:

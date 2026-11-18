@@ -20,15 +20,25 @@ ROOT = Path(__file__).absolute().parents[1]
 GH_TREE = "https://colinconwell.com/Tutorials/tutorials"
 COLAB_URL = "https://colab.research.google.com/github/ColinConwell/DL4HL-Workshop/blob/main/DL4HL-Tutorial.ipynb"
 
-SETUP = '''# @title In Colab? Click Play
+SETUP = '''# @title In Colab or Need Setup? Click Play
 import importlib.util, subprocess, sys
 
 _REQ = [
+    ("torch", "torch"),
+    ("torchvision", "torchvision"),
+    ("sklearn", "scikit-learn>=1.6"),
+    ("scipy", "scipy"),
+    ("matplotlib", "matplotlib"),
+    ("PIL", "pillow"),
+    ("transformers", "transformers>=4.49,<5"),
+    ("datasets", "datasets"),
+    ("accelerate", "accelerate"),
+    ("peft", "peft"),
     ("open_clip", "open-clip-torch"),
     ("horama", "horama"),
     ("overcomplete", "overcomplete"),
     ("skorch", "skorch"),
-    ("lightning", "lightning"),
+    ("torchmetrics", "torchmetrics"),
     ("torchinfo", "torchinfo"),
     ("torchlens", "torchlens"),
     ("huggingface_hub", "huggingface_hub"),
@@ -82,7 +92,7 @@ def html_items(block: str) -> list[str]:
     return items
 
 
-def convert_markdown(md: str) -> str:
+def convert_markdown(md: str, asset_ref: str = "main") -> str:
     lines, out, stack, i = md.splitlines(), [], [], 0
     while i < len(lines):
         line = lines[i]
@@ -122,6 +132,10 @@ def convert_markdown(md: str) -> str:
         i += 1
     text = "\n".join(out)
     text = re.sub(r"\]\(\.\./([\w-]+)/?\)", rf"]({GH_TREE}/\1)", text)
+    text = text.replace(
+        'src="assets/',
+        f'src="https://raw.githubusercontent.com/ColinConwell/DL4HL-Workshop/{escape(asset_ref, quote=True)}/assets/',
+    )
     text = re.sub(r"\{\.[\w-]+\}", "", text)
     return re.sub(r"\n{3,}", "\n\n", text).strip()
 
@@ -135,6 +149,8 @@ def convert_code(src: str) -> tuple[str, dict]:
         else:
             body.append(line)
     code, meta = "\n".join(body).strip("\n"), {}
+    if opts.get("label") == "setup":
+        code = code.replace("import os\n", 'import os\nos.environ.setdefault("DL4HL_STANDALONE", "1")\n', 1)
     if opts.get("echo") == "false" or opts.get("code-fold") == "true":
         title = opts.get("code-summary") or opts.get("label", "").replace("w-", "widget: ").replace("-", " ")
         code = f"# @title {title}\n{code}"
@@ -161,7 +177,7 @@ def build(src: Path, asset_ref: str = "main") -> nbformat.NotebookNode:
             code, md = convert_code(text)
             cells.append(new_code_cell(code, metadata=md))
         else:
-            md = convert_markdown(text)
+            md = convert_markdown(text, asset_ref)
             if md:
                 cells.append(new_markdown_cell(md))
     for i, cell in enumerate(cells):
@@ -182,12 +198,7 @@ def main() -> None:
     ap.add_argument("--asset-ref", help="Public workshop commit for the logo URL; publisher pins this.")
     args = ap.parse_args()
     out = args.out or args.src.with_suffix(".ipynb")
-    ref = args.asset_ref
-    if ref is None and out.exists():
-        match = re.search(r"DL4HL-Workshop/([a-f0-9]{40})/assets/visna-logo(?:-rounded\.svg|\.jpg)", out.read_text())
-        if match:
-            ref = match.group(1)
-    nb = build(args.src, ref or "main")
+    nb = build(args.src, args.asset_ref or "main")
     nbformat.validate(nb)
     nbformat.write(nb, out)
     n_code = sum(c.cell_type == "code" for c in nb.cells)

@@ -298,14 +298,14 @@ DL4HL.register('xor_fold', function (root, cfg) {
   function drawAll() {
     drawLeft(); drawRight();
     var msg = H === 0
-      ? '<span class="r">0 hidden layers: a single straight line cannot separate opposite XOR quadrants</span>'
+      ? '<span class="r">0 hidden layers: a single straight line cannot separate opposite XOR quadrants.</span>'
       : accNow >= 0.96
-        ? '<span class="g">solved: hidden ReLU creases fold opposite quadrants onto the same side of the readout</span>'
-        : '<span class="b">press play to move the hidden creases until the folded space separates cleanly</span>';
+        ? '<span class="g">Solved: hidden ReLU creases fold opposite quadrants onto the same side of the readout.</span>'
+        : '<span class="b">Press play to move the hidden creases until the folded space separates cleanly.</span>';
     read.innerHTML = '<span class="k">architecture</span> ' + (H === 0 ? 'linear perceptron' : ('2-layer MLP (' + H + ' ReLU units)')) +
       '<span class="sep">&middot;</span><span class="k">step</span> ' + stepCount +
       '<span class="sep">&middot;</span><span class="k">accuracy</span> ' + Math.round(accNow * 100) + '%' +
-      '<span class="sep">&middot;</span>' + msg;
+      '<div class="wread-interp">' + msg + '</div>';
   }
 
   loadData();

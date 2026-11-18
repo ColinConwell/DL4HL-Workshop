@@ -22,6 +22,7 @@ def bundled_helper_setup(root):
 
 # Download this notebook's reviewed helper version (Python, JavaScript, and CSS).
 import hashlib, io, tempfile, zipfile, os
+from pathlib import Path
 from urllib.request import urlopen
 os.environ["DL4HL_STANDALONE"] = "1"
 for _thread_variable in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
@@ -31,8 +32,12 @@ _helper_url = (
     "https://raw.githubusercontent.com/ColinConwell/DL4HL-Workshop/main/"
     f"assets/helpers/dl4hl-{{_helper_sha256}}.zip"
 )
-with urlopen(_helper_url, timeout=60) as _response:
-    _helper_zip = _response.read()
+_local_helper = Path(f"assets/helpers/dl4hl-{{_helper_sha256}}.zip")
+if _local_helper.is_file():
+    _helper_zip = _local_helper.read_bytes()
+else:
+    with urlopen(_helper_url, timeout=60) as _response:
+        _helper_zip = _response.read()
 if hashlib.sha256(_helper_zip).hexdigest() != _helper_sha256:
     raise RuntimeError("Helper download failed its SHA-256 check; nothing was loaded.")
 _helper_dir = tempfile.mkdtemp(prefix="dl4hl-helper-")

@@ -55,6 +55,8 @@ for line in source.splitlines():
 assert not stack, f"Unclosed Markdown containers: {stack}"
 
 widget_blocks = [block for block in blocks if re.search(r"^show\(", block, re.M)]
-assert len(widget_blocks) >= 10, f"Expected >= 10 interactive widgets, got {len(widget_blocks)}"
-assert all("#| code-fold: true" in block for block in widget_blocks), "Interactive figure code is not expandable and folded"
-print(f"PASS: {len(figure_blocks)} folded plot cells, {len(widget_blocks)} folded interactive widgets, and 10 synchronized takeaways")
+assert len(widget_blocks) == 9, f"Expected 9 interactive widgets, got {len(widget_blocks)}"
+assert all("#| echo: false" in block or "#| code-fold: true" in block for block in widget_blocks), "Interactive figure code is not hidden or folded"
+assert 'class="conwell-paper-fig"' in page, "Missing Conwell et al. (2025) Figure 9A/9B embed"
+assert "DeepJuice" not in page and "Sim-Acela" not in page, "Unreleased package reference remains"
+print(f"PASS: {len(figure_blocks)} folded plot cells, {len(widget_blocks)} interactive widgets, Conwell (2025) figures, and 10 synchronized takeaways")
