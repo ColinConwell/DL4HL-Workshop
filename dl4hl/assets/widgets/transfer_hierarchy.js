@@ -9,7 +9,7 @@
 DL4HL.register('transfer_hierarchy', function (root, cfg) {
   var M = DL4HL, C = M.C;
   M.frame(root, cfg, {
-    fig: 5,
+    fig: 6,
     title: 'Transfer learning: reusing a visual hierarchy instead of starting from noise',
     hint: 'Switch regime between Frozen head, Full finetune, and Train from scratch &middot; vary Labeled sample size N'
   });

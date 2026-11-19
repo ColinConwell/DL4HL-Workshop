@@ -9,7 +9,7 @@
 DL4HL.register('sae_superposition', function (root, cfg) {
   var M = DL4HL, C = M.C;
   M.frame(root, cfg, {
-    fig: 7,
+    fig: 9,
     title: 'Polysemantic neurons vs. monosemantic Sparse Autoencoder (SAE) latents',
     hint: 'Press play to sweep across topics and watch dense neurons mix vs. SAE latents isolate each theme &middot; click any concept spoke or toggle 2 co-active concepts'
   });

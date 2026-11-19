@@ -327,3 +327,52 @@
 .ml4hl .wae-architecture text {fill:var(--fg);font:12px system-ui,sans-serif;text-anchor:middle;}
 .ml4hl .wae-architecture .wae-edge {stroke:var(--muted);stroke-opacity:0.18;stroke-width:1;}
 .ml4hl .wae-architecture p {font:12px/1.5 system-ui,sans-serif;color:var(--muted);margin:8px 0;}
+
+/* ─── Control-varying model-zoo annotation card (Figure 13) ─── */
+.ml4hl .trifecta-zoo-card {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+}
+.ml4hl .trifecta-zoo-head {
+  margin: 0 0 8px;
+  font: 600 10px/1.4 var(--mono);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ml4hl .trifecta-zoo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 8px;
+}
+.ml4hl .trifecta-zoo-arm {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-left-width: 3px;
+  border-radius: 3px;
+  background: var(--surface);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.ml4hl .trifecta-zoo-arm:hover {
+  border-color: var(--blue);
+}
+.ml4hl .trifecta-zoo-arm.active {
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--fg);
+}
+.ml4hl .trifecta-zoo-arm strong {
+  font: 600 11.5px/1.35 var(--sans);
+  color: var(--fg);
+}
+.ml4hl .trifecta-zoo-arm span {
+  font: 400 11px/1.4 var(--sans);
+  color: var(--muted);
+}

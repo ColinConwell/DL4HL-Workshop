@@ -21,7 +21,7 @@ GH_TREE = "https://colinconwell.com/Tutorials/tutorials"
 COLAB_URL = "https://colab.research.google.com/github/ColinConwell/DL4HL-Workshop/blob/main/DL4HL-Tutorial.ipynb"
 
 SETUP = '''# @title In Colab or Need Setup? Click Play
-import importlib.util, subprocess, sys
+import importlib.util, shutil, subprocess, sys
 
 _REQ = [
     ("torch", "torch"),
@@ -52,7 +52,10 @@ if importlib.util.find_spec("cv2") is not None:
     try:
         import cv2 as _cv2  # noqa: F401
     except ImportError:
-        subprocess.run([sys.executable, "-m", "pip", "install", "-q", "--force-reinstall", "--no-deps", "opencv-python-headless"], check=True)'''
+        subprocess.run([sys.executable, "-m", "pip", "install", "-q", "--force-reinstall", "--no-deps", "opencv-python-headless"], check=True)
+if shutil.which("dot") is None and shutil.which("apt-get") is not None:
+    subprocess.run(["apt-get", "update", "-qq"], check=False)
+    subprocess.run(["apt-get", "install", "-y", "-qq", "graphviz"], check=False)'''
 
 
 def front_matter(text: str) -> tuple[dict, str]:

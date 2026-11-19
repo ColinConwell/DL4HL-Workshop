@@ -29,8 +29,11 @@ def set_style(context: str = "notebook") -> None:
     mpl.rcParams.update({
         "figure.facecolor": BG, "axes.facecolor": BG, "savefig.facecolor": BG,
         "axes.edgecolor": "#cfc9bc", "axes.labelcolor": INK, "axes.titlecolor": INK,
-        "axes.titleweight": "semibold", "axes.titlelocation": "left", "axes.titlesize": "medium",
+        "axes.titleweight": "semibold", "axes.titlelocation": "left",
+        "font.size": 11.5, "axes.titlesize": 12.8, "axes.labelsize": 11.5,
+        "xtick.labelsize": 10.5, "ytick.labelsize": 10.5, "legend.fontsize": 10.2,
+        "figure.titlesize": 13.2, "figure.titleweight": "semibold",
         "grid.color": GRID, "xtick.color": MUTED, "ytick.color": MUTED, "text.color": INK,
         "axes.spines.top": False, "axes.spines.right": False, "legend.frameon": False,
-        "figure.dpi": 110,
+        "figure.dpi": 120,
     })

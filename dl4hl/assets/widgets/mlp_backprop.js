@@ -8,7 +8,7 @@
 DL4HL.register('mlp_backprop', function (root, cfg) {
   var M = DL4HL, C = M.C;
   M.frame(root, cfg, {
-    fig: 4,
+    fig: 5,
     title: 'Inside a tabular neural network: forward pass & error backpropagation',
     hint: 'Press play or step to run forward + backward updates &middot; modulate playback speed &middot; adjust predictor sliders to test live inputs'
   });

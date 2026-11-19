@@ -9,7 +9,7 @@
 DL4HL.register('llm_explainer', function (root, cfg) {
   var M = DL4HL, C = M.C;
   M.frame(root, cfg, {
-    fig: 6,
+    fig: 7,
     title: '(GPT-Style) LLMs: from subword tokens to next-token trajectories',
     hint: 'Press play to trace tokens through attention layers &middot; slide Attention head across all 12 heads &middot; drag the 3D sphere or adjust Temperature'
   });

@@ -9,9 +9,9 @@
 DL4HL.register('manifold_untangle', function (root, cfg) {
   var M = DL4HL, C = M.C;
   M.frame(root, cfg, {
-    fig: 3,
-    title: 'Untangling Christmas lights: progressive manifold disentanglement across depth',
-    hint: 'Press play or scrub Depth to travel from input layer L0 to L4 &middot; increase Tangle turns to tighten the knot'
+    fig: 2,
+    title: 'Deep learning as disentanglement: unknotting tangled curves layer by layer',
+    hint: 'Press play or scrub Depth to travel from input layer L0 to L4 &middot; increase Tangle turns to tighten the spiral'
   });
 
   var seed = cfg.seed || 11;
@@ -259,9 +259,9 @@ DL4HL.register('manifold_untangle', function (root, cfg) {
   var right = M.stage(split.b, { height: function () { return left.h || 260; }, ref: 330, label: 'Linear separability rising layer by layer' });
 
   M.legend(root, [
-    { color: C.blue, label: 'strand A (manifold 0)' },
-    { color: C.orange, label: 'strand B (manifold 1)' },
-    { color: C.ink, label: 'best single-cut linear probe', line: true }
+    { color: C.blue, label: 'strand A (category 0)' },
+    { color: C.orange, label: 'strand B (category 1)' },
+    { color: C.ink, label: 'best single straight cut', line: true }
   ]);
 
   var tr = M.transport(root, {

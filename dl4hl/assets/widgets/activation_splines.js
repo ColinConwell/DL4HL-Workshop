@@ -8,9 +8,9 @@
 DL4HL.register('activation_splines', function (root, cfg) {
   var M = DL4HL, C = M.C;
   M.frame(root, cfg, {
-    fig: 1,
-    title: 'Bending the line: nonlinear activations vs. linear collapse',
-    hint: 'Switch activation between Linear, ReLU, GELU, and Tanh &middot; press play to optimize hidden hinges &middot; drag knot handles along the axis'
+    fig: 3,
+    title: 'Bending the line: nonlinear hinges vs. linear collapse',
+    hint: 'Switch activation between Linear, ReLU, GELU, and Tanh &middot; press play to fit hidden hinges &middot; drag knot handles along the axis'
   });
 
   var real = cfg.data && cfg.data.x && cfg.data.y;
@@ -237,16 +237,16 @@ DL4HL.register('activation_splines', function (root, cfg) {
 
   /* ─── DOM ─── */
   var split = M.split(root, 1.45);
-  M.mini(split.a, 'network mean prediction + individual hidden unit curves');
-  M.mini(split.b, 'single hidden unit response \u03c3(z)');
+  M.mini(split.a, 'combined network curve + individual hidden unit bends');
+  M.mini(split.b, 'what a single hidden unit does');
   var hf = function (w) { return M.clamp(w * 0.66, 225, 310); };
   var left = M.stage(split.a, { height: hf, ref: 460, label: 'Data scatter with hidden basis hinges and summed network fit' });
   var right = M.stage(split.b, { height: function () { return left.h || 250; }, ref: 320, label: 'Activation function shape for a single hidden unit' });
 
   M.legend(root, [
     { color: C.muted, label: real ? 'observed child vocabulary' : 'observed data' },
-    { color: C.orange, label: 'hidden unit curves u\u2c7c(x)', line: true },
-    { color: C.blue, label: 'network readout \u0177(x) (mean)', line: true }
+    { color: C.orange, label: 'individual hidden unit bends', line: true },
+    { color: C.blue, label: 'combined network curve', line: true }
   ]);
 
   var row = M.row(root);
@@ -366,7 +366,7 @@ DL4HL.register('activation_splines', function (root, cfg) {
     if (!s.w) return;
     vR.update();
     M.clear(ctx, s);
-    M.axes(ctx, vR, s, { xlabel: 'pre-activation z', ylabel: 'activation \u03c3(z)', nx: 4, ny: 4 });
+    M.axes(ctx, vR, s, { xlabel: 'weighted input', ylabel: 'unit output', nx: 4, ny: 4 });
     ctx.save(); vR.clip(ctx);
     ctx.strokeStyle = M.rgba(C.muted, 0.45);
     ctx.lineWidth = 1;
@@ -388,8 +388,8 @@ DL4HL.register('activation_splines', function (root, cfg) {
     ctx.restore();
 
     var tag = actKind === 'linear' ? 'Linear: average of lines = 1 line' :
-      actKind === 'relu' ? 'ReLU: sharp hinge at z = 0' :
-      actKind === 'gelu' ? 'GELU: smooth probabilistic bend' : 'Tanh: saturating S-curve';
+      actKind === 'relu' ? 'ReLU: sharp hinge at threshold' :
+      actKind === 'gelu' ? 'GELU: smooth gradual bend' : 'Tanh: smooth S-curve';
     M.pill(ctx, s, tag, vR.L + 6 * s.sc, vR.T + 14 * s.sc, { color: actKind === 'linear' ? C.red : C.ink });
   }
 

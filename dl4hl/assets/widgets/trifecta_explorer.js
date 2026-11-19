@@ -1,19 +1,16 @@
 /* ══════════════════════════════════════════════════════════════════
-   Figure 10 — The Neuroconnectionist Trifecta & opportunistic model
-   experiments
-   Perceptual representations reflect three interacting pressures:
-   1. Sensory Diet (Input: e.g., dogs-only, cats-only, dogs+cats, or
-      paired vision + language in CLIP)
-   2. Computational Architecture (2D convolutional kernel vs. global
-      self-attention head)
-   3. Computational Objective (Supervised, Autoencoder, Contrastive, CLIP)
+   Figure 13 — The Neuroconnectionist Trifecta & opportunistic model
+   experiments (Unified single-panel left-to-right pipeline):
+   [1. Sensory Diet] => [2. Architecture] => [3. Objective / Latent Hypersphere]
+   with a control-varying opportunistic model-zoo annotation card
+   underneath the hypersphere.
    ══════════════════════════════════════════════════════════════════ */
 DL4HL.register('trifecta_explorer', function (root, cfg) {
   var M = DL4HL, C = M.C;
   M.frame(root, cfg, {
-    fig: 10,
-    title: 'Types of deep learning models: sensory diet, architecture, & objective',
-    hint: 'Choose which Trifecta factor to vary &middot; inspect the Input, Architecture, &amp; Model-Zoo schematic &middot; press play or drag the 3D hypersphere'
+    fig: 13,
+    title: 'Types of deep learning models: sensory diet \u21d2 architecture \u21d2 objective',
+    hint: 'Choose which Trifecta factor to vary &middot; click any opportunistic experiment card beneath the sphere or use the toggles &middot; press play or drag the 3D hypersphere'
   });
 
   var THUMB_URIS = {
@@ -49,6 +46,7 @@ DL4HL.register('trifecta_explorer', function (root, cfg) {
 
   var prog = 1.0; // 0..1 training progression
   var yaw = -0.32, pitch = 0.24, dragOrigin = null;
+  var sphereBounds = { cx: 0, cy: 0, R: 80 };
   var ready = false;
 
   /* 24 instances: 12 Dogs (family 0, blue) + 12 Cats (family 1, orange) */
@@ -101,19 +99,22 @@ DL4HL.register('trifecta_explorer', function (root, cfg) {
     return { pts: pts, twins: twins };
   }
 
-  /* ─── DOM (Trifecta Schematic first: left on desktop, above on narrow screens) ─── */
-  var split = M.split(root, 1.18);
-  M.mini(split.a, 'trifecta schematic: sensory diet, architecture, & model zoo');
-  M.mini(split.b, 'latent hypersphere: how representations organize');
-  var hf = function (w) { return M.clamp(w * 0.78, 324, 368); };
-  var schemStage = M.stage(split.a, { height: hf, ref: 450, label: 'Visual depictions of dog and cat sensory diets, convolutional vs attention architectures, and controlled model-zoo experiments' });
-  var sphereStage = M.stage(split.b, { height: function () { return schemStage.h || 334; }, ref: 390, label: '3D latent hypersphere showing how supervised, autoencoder, contrastive, and CLIP objectives arrange dog and cat representations' });
+  /* ─── DOM: Single Unified Left-to-Right Stage + Control-Varying Annotation Underneath ─── */
+  M.mini(root, 'neuroconnectionist pipeline: sensory diet \u21d2 architecture \u21d2 objective / latent hypersphere');
+  var stage = M.stage(root, {
+    height: function (w) { return w < 620 ? 500 : M.clamp(w * 0.42, 278, 338); },
+    ref: 760,
+    label: 'Single-panel left-to-right diagram of Sensory Diet flowing into Computational Architecture flowing into the 3D Latent Hypersphere'
+  });
 
   M.legend(root, [
     { color: C.blue, label: 'dog exemplars' },
     { color: C.orange, label: 'cat exemplars' },
     { color: C.green, label: 'supervised label / paired text anchor' }
   ]);
+
+  /* Control-varying model-zoo annotation card directly underneath the hypersphere */
+  var zooCard = root.appendChild(M.h('div', { class: 'trifecta-zoo-card', 'aria-live': 'polite' }));
 
   var tr = M.transport(root, {
     n: 61, fps: 30, aria: 'Training progression from random initialization to learned geometry',
@@ -136,6 +137,7 @@ DL4HL.register('trifecta_explorer', function (root, cfg) {
       else if (v === 'input') { taskMode = 'contrastive'; archMode = 'cnn'; }
       else { dietMode = 'both'; }
       rebuildSubControl();
+      renderZooCard();
       tr.show(60);
       drawAll();
     }
@@ -147,17 +149,18 @@ DL4HL.register('trifecta_explorer', function (root, cfg) {
     yaw = -0.32; pitch = 0.24;
     varyT.set('task', true);
     rebuildSubControl();
+    renderZooCard();
     tr.show(60); drawAll();
   });
 
   var row2 = M.row(root);
   var read = M.readout(root);
+  var subToggle = null;
 
-  /* Coupled sub-control row: shows ONLY the active factor's levels so held factors never conflict */
   function rebuildSubControl() {
     row2.innerHTML = '';
     if (varyAxis === 'task') {
-      M.toggle(row2, {
+      subToggle = M.toggle(row2, {
         label: 'Objective (varied)', value: taskMode,
         options: [
           ['supervised', 'Supervised'],
@@ -165,72 +168,330 @@ DL4HL.register('trifecta_explorer', function (root, cfg) {
           ['contrastive', 'Contrastive'],
           ['clip', 'CLIP (Vision + Text)']
         ],
-        onChange: function (v) { taskMode = v; tr.show(60); drawAll(); }
+        onChange: function (v) { taskMode = v; renderZooCard(); tr.show(60); drawAll(); }
       });
       M.label(row2, '&middot; Held: Dogs+Cats &amp; CNN/ViT');
     } else if (varyAxis === 'arch') {
-      M.toggle(row2, {
+      subToggle = M.toggle(row2, {
         label: 'Architecture (varied)', value: archMode,
         options: [
           ['cnn', 'CNN (2D Conv)'],
           ['vit', 'Transformer (Self-Attn)']
         ],
-        onChange: function (v) { archMode = v; tr.show(60); drawAll(); }
+        onChange: function (v) { archMode = v; renderZooCard(); tr.show(60); drawAll(); }
       });
       M.label(row2, '&middot; Held: Dogs+Cats &amp; Supervised');
     } else {
-      M.toggle(row2, {
+      subToggle = M.toggle(row2, {
         label: 'Sensory Diet (varied)', value: dietMode,
         options: [
           ['dogs', 'Dogs only'],
           ['cats', 'Cats only'],
           ['both', 'Dogs + Cats']
         ],
-        onChange: function (v) { dietMode = v; tr.show(60); drawAll(); }
+        onChange: function (v) { dietMode = v; renderZooCard(); tr.show(60); drawAll(); }
       });
       M.label(row2, '&middot; Held: CNN &amp; Contrastive');
     }
   }
-  rebuildSubControl();
 
-  M.pointer(sphereStage.cv, {
-    down: function (p) { dragOrigin = { x: p.x, y: p.y, yaw: yaw, pitch: pitch }; return true; },
+  function renderZooCard() {
+    var spec;
+    if (varyAxis === 'task') {
+      spec = {
+        head: 'Opportunistic Model-Zoo Control — Vary Objective (Hold Dogs+Cats Diet & Architecture Constant)',
+        cur: taskMode,
+        onSelect: function (k) { taskMode = k; if (subToggle) subToggle.set(k, true); renderZooCard(); tr.show(60); drawAll(); },
+        arms: [
+          { key: 'supervised', col: C.blue, title: 'Supervised (e.g. Torchvision ResNet-18)', desc: 'Explicit category labels pull Dog & Cat poles apart.' },
+          { key: 'autoencode', col: C.purple, title: 'Autoencoding (e.g. MAE / Conv-AE)', desc: 'Reconstruction organizes smooth pose & appearance manifolds.' },
+          { key: 'contrastive', col: C.green, title: 'Self-Supervised Contrastive (e.g. SimCLR)', desc: 'Instance augmentations pull views together without labels.' },
+          { key: 'clip', col: C.orange, title: 'Vision-Language Contrastive (e.g. OpenCLIP)', desc: 'Joint image\u2013caption cosine alignment on the unit sphere.' }
+        ]
+      };
+    } else if (varyAxis === 'arch') {
+      spec = {
+        head: 'Opportunistic Model-Zoo Control — Vary Architecture (Hold Dogs+Cats Diet & Supervised Objective Constant)',
+        cur: archMode,
+        onSelect: function (k) { archMode = k; if (subToggle) subToggle.set(k, true); renderZooCard(); tr.show(60); drawAll(); },
+        arms: [
+          { key: 'cnn', col: C.blue, title: '2D Convolutional Backbone (ResNet-18 / ConvNeXt, timm)', desc: 'Local sliding 2D filters detect edges, textures, and object parts across space.' },
+          { key: 'vit', col: C.green, title: 'Self-Attention Backbone (ViT-B/16, timm)', desc: 'Global multi-head attention routes context across all image patches.' }
+        ]
+      };
+    } else {
+      spec = {
+        head: 'Opportunistic Model-Zoo Control — Vary Sensory Diet (Hold CNN Architecture & Contrastive Objective Constant)',
+        cur: dietMode,
+        onSelect: function (k) { dietMode = k; if (subToggle) subToggle.set(k, true); renderZooCard(); tr.show(60); drawAll(); },
+        arms: [
+          { key: 'dogs', col: C.blue, title: 'Narrow Dogs-Only Diet (Open-IPCL)', desc: 'Allocates representational capacity to fine-grained within-dog variation.' },
+          { key: 'cats', col: C.orange, title: 'Narrow Cats-Only Diet (Open-IPCL)', desc: 'Allocates representational capacity to fine-grained within-cat variation.' },
+          { key: 'both', col: C.green, title: 'Diverse Dogs + Cats Diet (Konkle & Alvarez, 2022)', desc: 'Carves broader between-category axes alongside instance structure.' }
+        ]
+      };
+    }
+
+    zooCard.innerHTML = '';
+    zooCard.appendChild(M.h('div', { class: 'trifecta-zoo-head', text: spec.head }));
+    var grid = zooCard.appendChild(M.h('div', { class: 'trifecta-zoo-grid' }));
+    spec.arms.forEach(function (arm) {
+      var isAct = arm.key === spec.cur;
+      var btn = M.h('button', {
+        type: 'button',
+        class: 'trifecta-zoo-arm' + (isAct ? ' active' : ''),
+        'aria-pressed': String(isAct),
+        style: { borderLeftColor: arm.col },
+        onclick: function () { spec.onSelect(arm.key); }
+      }, [
+        M.h('strong', { text: arm.title }),
+        M.h('span', { text: arm.desc })
+      ]);
+      grid.appendChild(btn);
+    });
+  }
+
+  rebuildSubControl();
+  renderZooCard();
+
+  M.pointer(stage.cv, {
+    down: function (p) {
+      var dx = p.x - sphereBounds.cx, dy = p.y - sphereBounds.cy;
+      if (dx * dx + dy * dy > Math.pow(sphereBounds.R * 1.45, 2)) return false;
+      dragOrigin = { x: p.x, y: p.y, yaw: yaw, pitch: pitch };
+      return true;
+    },
     drag: function (p) {
       if (!dragOrigin) return;
       yaw = dragOrigin.yaw + (p.x - dragOrigin.x) * 0.012;
       pitch = M.clamp(dragOrigin.pitch + (p.y - dragOrigin.y) * 0.012, -1.1, 1.1);
       drawAll();
     },
-    up: function () { dragOrigin = null; }
+    up: function () { dragOrigin = null; },
+    hover: function (p) {
+      var dx = p.x - sphereBounds.cx, dy = p.y - sphereBounds.cy;
+      stage.cv.style.cursor = (dx * dx + dy * dy <= Math.pow(sphereBounds.R * 1.25, 2)) ? 'grab' : '';
+    }
   });
 
-  function drawSpherePanel() {
-    var ctx = sphereStage.ctx, s = sphereStage;
-    if (!s.w) return;
-    M.clear(ctx, s);
-    var R = Math.min(s.w, s.h - 24 * s.sc) * 0.40;
-    var cx = s.w * 0.5, cy = s.h * 0.54;
+  function drawThumb(ctx, kind, idx, x, y, sz, borderCol, s) {
+    var img = thumbImgs[kind][idx % thumbImgs[kind].length];
+    ctx.save();
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(x, y, sz, sz, 4 * s.sc); else ctx.rect(x, y, sz, sz);
+    ctx.clip();
+    if (img && img.complete && img.naturalWidth > 0) {
+      ctx.drawImage(img, x, y, sz, sz);
+    } else {
+      ctx.fillStyle = M.rgba(borderCol, 0.18);
+      ctx.fillRect(x, y, sz, sz);
+    }
+    ctx.restore();
+    ctx.strokeStyle = borderCol;
+    ctx.lineWidth = 1.2 * s.sc;
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(x, y, sz, sz, 4 * s.sc); else ctx.rect(x, y, sz, sz);
+    ctx.stroke();
+  }
+
+  function drawStageCard(ctx, x, y, w, h, title, varied, accentCol, s) {
+    ctx.fillStyle = varied ? M.rgba(accentCol, 0.06) : C.surface;
+    ctx.strokeStyle = varied ? accentCol : C.border;
+    ctx.lineWidth = (varied ? 1.65 : 1.05) * s.sc;
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(x, y, w, h, 5 * s.sc); else ctx.rect(x, y, w, h);
+    ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = varied ? accentCol : C.ink;
+    ctx.font = M.font(s, 8.3, 700, 'sans');
+    ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    ctx.fillText(title, x + 8 * s.sc, y + 7 * s.sc);
+
+    M.pill(ctx, s, varied ? 'VARIED' : 'HELD', x + w - 7 * s.sc, y + 12 * s.sc, {
+      align: 'right', color: varied ? accentCol : C.muted, size: 7.2
+    });
+  }
+
+  function drawDietBox(ctx, rx, ry, rw, rh, s) {
+    drawStageCard(ctx, rx, ry, rw, rh, '1. SENSORY DIET', varyAxis === 'input', C.orange, s);
+    var innerTop = ry + 26 * s.sc, innerH = rh - 34 * s.sc;
+    var pad = 8 * s.sc, gw = rw - 2 * pad;
+
+    if (taskMode === 'clip') {
+      /* Paired image + caption rows for Dog & Cat */
+      var rowH = (innerH - 8 * s.sc) * 0.5;
+      [['dogs', C.blue, '"a photo of a dog"'], ['cats', C.orange, '"a photo of a cat"']].forEach(function (item, idx) {
+        var py = innerTop + idx * (rowH + 8 * s.sc);
+        ctx.fillStyle = M.rgba(item[1], 0.06);
+        ctx.strokeStyle = M.rgba(item[1], 0.45);
+        ctx.lineWidth = 1.0 * s.sc;
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(rx + pad, py, gw, rowH, 4 * s.sc); else ctx.rect(rx + pad, py, gw, rowH);
+        ctx.fill(); ctx.stroke();
+
+        var tSz = Math.min(rowH - 12 * s.sc, 44 * s.sc);
+        var ty = py + (rowH - tSz) * 0.5;
+        drawThumb(ctx, item[0], 0, rx + pad + 7 * s.sc, ty, tSz, item[1], s);
+        ctx.fillStyle = C.green; ctx.font = M.font(s, 9.5, 700);
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('\u2194', rx + pad + 7 * s.sc + tSz + 10 * s.sc, py + rowH * 0.5);
+
+        var chipX = rx + pad + 7 * s.sc + tSz + 20 * s.sc;
+        var chipW = Math.max(44 * s.sc, rx + pad + gw - chipX - 6 * s.sc);
+        ctx.fillStyle = M.rgba(C.green, 0.12);
+        ctx.strokeStyle = M.rgba(C.green, 0.65);
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(chipX, py + rowH * 0.5 - 12 * s.sc, chipW, 24 * s.sc, 4 * s.sc);
+        else ctx.rect(chipX, py + rowH * 0.5 - 12 * s.sc, chipW, 24 * s.sc);
+        ctx.fill(); ctx.stroke();
+        ctx.fillStyle = C.ink; ctx.font = M.font(s, 7.5, 600);
+        ctx.fillText(item[2], chipX + chipW * 0.5, py + rowH * 0.5);
+      });
+    } else {
+      /* Stacked Dog strip + OR/+ pill + Cat strip */
+      var sepH = 18 * s.sc;
+      var stripH = (innerH - sepH) * 0.5;
+      var dogsOn = dietMode !== 'cats', catsOn = dietMode !== 'dogs';
+
+      [['dogs', innerTop, C.blue, dogsOn, 'Dogs'], ['cats', innerTop + stripH + sepH, C.orange, catsOn, 'Cats']].forEach(function (g) {
+        ctx.save();
+        ctx.fillStyle = g[3] ? M.rgba(g[2], 0.07) : M.rgba(C.border, 0.20);
+        ctx.strokeStyle = g[3] ? M.rgba(g[2], 0.72) : C.border;
+        ctx.lineWidth = (g[3] ? 1.2 : 0.9) * s.sc;
+        if (!g[3]) ctx.setLineDash([3 * s.sc, 2 * s.sc]);
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(rx + pad, g[1], gw, stripH, 4 * s.sc); else ctx.rect(rx + pad, g[1], gw, stripH);
+        ctx.fill(); ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.globalAlpha = g[3] ? 1.0 : 0.28;
+        var gap = 5 * s.sc;
+        var sz = Math.min(stripH - 12 * s.sc, (gw - 16 * s.sc - 2 * gap) / 3);
+        var totW = 3 * sz + 2 * gap;
+        var x0 = rx + pad + (gw - totW) * 0.5, y0 = g[1] + (stripH - sz) * 0.5;
+        for (var ti = 0; ti < 3; ti++) drawThumb(ctx, g[0], ti, x0 + ti * (sz + gap), y0, sz, g[2], s);
+        ctx.restore();
+      });
+
+      M.pill(ctx, s, varyAxis === 'input' ? 'OR / +' : '+', rx + rw * 0.5, innerTop + stripH + sepH * 0.5, {
+        align: 'center', color: varyAxis === 'input' ? C.orange : C.muted, size: 7.5
+      });
+    }
+  }
+
+  function drawArchBox(ctx, rx, ry, rw, rh, s) {
+    drawStageCard(ctx, rx, ry, rw, rh, '2. ARCHITECTURE', varyAxis === 'arch', C.blue, s);
+    var innerTop = ry + 26 * s.sc, innerH = rh - 34 * s.sc;
+    var pad = 8 * s.sc, gw = rw - 2 * pad;
+    var subH = (innerH - 8 * s.sc) * 0.5;
+    var cnnOn = varyAxis === 'task' || archMode === 'cnn';
+    var vitOn = varyAxis === 'task' || (varyAxis === 'arch' && archMode === 'vit');
+
+    /* Upper sub-card: CNN 2D Convolution */
+    var cy0 = innerTop;
+    ctx.fillStyle = cnnOn ? M.rgba(C.blue, 0.07) : M.rgba(C.border, 0.16);
+    ctx.strokeStyle = cnnOn ? C.blue : C.border;
+    ctx.lineWidth = (cnnOn ? 1.4 : 0.9) * s.sc;
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(rx + pad, cy0, gw, subH, 4 * s.sc); else ctx.rect(rx + pad, cy0, gw, subH);
+    ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = cnnOn ? C.blue : C.muted;
+    ctx.font = M.font(s, 7.8, 600, 'sans');
+    ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    ctx.fillText('CNN: 2D Convolution', rx + pad + 6 * s.sc, cy0 + 5 * s.sc);
+
+    var cell = Math.min((subH - 23 * s.sc) / 5.1, (gw * 0.42) / 5.1);
+    var gx = rx + pad + 10 * s.sc, gy = cy0 + 18 * s.sc;
+    for (var r = 0; r < 5; r++) {
+      for (var c = 0; c < 5; c++) {
+        var inK = r >= 1 && r <= 3 && c >= 1 && c <= 3;
+        ctx.fillStyle = inK ? M.rgba(C.blue, cnnOn ? 0.28 : 0.10) : C.codeBg;
+        ctx.strokeStyle = inK && cnnOn ? C.blue : C.border;
+        ctx.lineWidth = (inK ? 1.0 : 0.6) * s.sc;
+        ctx.fillRect(gx + c * cell, gy + r * cell, cell, cell);
+        ctx.strokeRect(gx + c * cell, gy + r * cell, cell, cell);
+      }
+    }
+    var fx = gx + 5 * cell + Math.max(16 * s.sc, gw * 0.14), fy = gy + cell;
+    for (var r2 = 0; r2 < 3; r2++) {
+      for (var c2 = 0; c2 < 3; c2++) {
+        var ctr = r2 === 1 && c2 === 1;
+        ctx.fillStyle = ctr ? (cnnOn ? C.blue : C.muted) : M.rgba(C.blue, 0.14);
+        ctx.strokeStyle = C.border; ctx.lineWidth = 0.6 * s.sc;
+        ctx.fillRect(fx + c2 * cell, fy + r2 * cell, cell, cell);
+        ctx.strokeRect(fx + c2 * cell, fy + r2 * cell, cell, cell);
+      }
+    }
+    ctx.strokeStyle = M.rgba(C.blue, cnnOn ? 0.65 : 0.25); ctx.lineWidth = 1.0 * s.sc;
+    ctx.beginPath();
+    ctx.moveTo(gx + 4 * cell, gy + cell); ctx.lineTo(fx + 1.5 * cell, fy + 1.5 * cell);
+    ctx.moveTo(gx + 4 * cell, gy + 4 * cell); ctx.lineTo(fx + 1.5 * cell, fy + 1.5 * cell);
+    ctx.stroke();
+
+    /* Lower sub-card: ViT Attention Head */
+    var vy0 = innerTop + subH + 8 * s.sc;
+    ctx.fillStyle = vitOn ? M.rgba(C.green, 0.08) : M.rgba(C.border, 0.16);
+    ctx.strokeStyle = vitOn ? C.green : C.border;
+    ctx.lineWidth = (vitOn ? 1.4 : 0.9) * s.sc;
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(rx + pad, vy0, gw, subH, 4 * s.sc); else ctx.rect(rx + pad, vy0, gw, subH);
+    ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = vitOn ? C.green : C.muted;
+    ctx.font = M.font(s, 7.8, 600, 'sans');
+    ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    ctx.fillText('ViT: Self-Attention', rx + pad + 6 * s.sc, vy0 + 5 * s.sc);
+
+    var xSrc = rx + pad + 18 * s.sc, xDst = rx + pad + gw - 18 * s.sc;
+    var yTop = vy0 + 21 * s.sc, stepY = Math.max(8 * s.sc, (subH - 28 * s.sc) / 3);
+    var attnW = [[0.5, 0.2, 0.8, 0.1], [0.2, 0.7, 0.2, 0.6], [0.8, 0.2, 0.6, 0.3], [0.1, 0.6, 0.3, 0.7]];
+    for (var ai = 0; ai < 4; ai++) {
+      for (var aj = 0; aj < 4; aj++) {
+        var aw = attnW[ai][aj];
+        if (aw < 0.25) continue;
+        ctx.strokeStyle = M.rgba(C.green, (vitOn ? 0.72 : 0.22) * aw);
+        ctx.lineWidth = (0.6 + aw * 1.6) * s.sc;
+        ctx.beginPath();
+        ctx.moveTo(xSrc + 4 * s.sc, yTop + ai * stepY);
+        ctx.bezierCurveTo((xSrc + xDst) * 0.5, yTop + ai * stepY, (xSrc + xDst) * 0.5, yTop + aj * stepY, xDst - 4 * s.sc, yTop + aj * stepY);
+        ctx.stroke();
+      }
+    }
+    for (var ak = 0; ak < 4; ak++) {
+      M.dot(ctx, xSrc, yTop + ak * stepY, 3.3 * s.sc, C.surface, vitOn ? C.green : C.muted, 1.2 * s.sc);
+      M.dot(ctx, xDst, yTop + ak * stepY, 3.5 * s.sc, vitOn ? C.green : C.muted, C.surface, 0.9 * s.sc);
+    }
+  }
+
+  function drawSphereBox(ctx, rx, ry, rw, rh, s) {
+    drawStageCard(ctx, rx, ry, rw, rh, '3. OBJECTIVE / LATENT HYPERSPHERE', varyAxis === 'task', C.green, s);
+
+    var innerTop = ry + 24 * s.sc, innerBot = ry + rh - 24 * s.sc;
+    var cx = rx + rw * 0.5, cy = (innerTop + innerBot) * 0.5 + 2 * s.sc;
+    var R = Math.min(rw * 0.39, (innerBot - innerTop) * 0.45);
+    sphereBounds = { cx: cx, cy: cy, R: R };
+
     M.drawSphere(ctx, cx, cy, R, yaw, pitch, s);
 
     var targ = targetPositions(taskMode);
     var famCols = [C.blue, C.orange];
 
-    /* Supervised target attractors on the sphere (drawn behind/around points with explicit labels) */
     if (taskMode === 'supervised') {
       [['Label: "Dog"', SUP_CENTERS[0], C.blue], ['Label: "Cat"', SUP_CENTERS[1], C.orange]].forEach(function (item) {
         var sp = M.sphereProject(item[1], cx, cy, R, yaw, pitch);
         ctx.strokeStyle = M.rgba(item[2], 0.55);
         ctx.setLineDash([3 * s.sc, 2 * s.sc]);
-        ctx.lineWidth = 1.3 * s.sc;
-        ctx.beginPath(); ctx.arc(sp.x, sp.y, 17 * s.sc, 0, Math.PI * 2); ctx.stroke();
+        ctx.lineWidth = 1.2 * s.sc;
+        ctx.beginPath(); ctx.arc(sp.x, sp.y, 15 * s.sc, 0, Math.PI * 2); ctx.stroke();
         ctx.setLineDash([]);
-        M.star(ctx, sp.x, sp.y, 6.2 * s.sc, C.green, C.surface);
-        M.pill(ctx, s, item[0], sp.x, sp.y - 16 * s.sc, { align: 'center', color: item[2], size: 8.0 });
+        M.star(ctx, sp.x, sp.y, 5.8 * s.sc, C.green, C.surface);
+        M.pill(ctx, s, item[0], sp.x, sp.y - 15 * s.sc, { align: 'center', color: item[2], size: 7.6 });
       });
     } else if (taskMode === 'clip') {
       [['"a photo of a dog"', SUP_CENTERS[0], C.blue], ['"a photo of a cat"', SUP_CENTERS[1], C.orange]].forEach(function (item) {
         var sp2 = M.sphereProject(item[1], cx, cy, R, yaw, pitch);
-        M.pill(ctx, s, item[0], sp2.x, sp2.y - 18 * s.sc, { align: 'center', color: item[2], size: 7.8 });
+        M.pill(ctx, s, item[0], sp2.x, sp2.y - 16 * s.sc, { align: 'center', color: item[2], size: 7.4 });
       });
     }
 
@@ -257,288 +518,68 @@ DL4HL.register('trifecta_explorer', function (root, cfg) {
       if (taskMode === 'contrastive' || taskMode === 'clip') {
         var pt = M.sphereProject(curT, cx, cy, R, yaw, pitch);
         ctx.strokeStyle = M.rgba(col, front ? 0.55 : 0.2);
-        ctx.lineWidth = 1.2 * s.sc;
+        ctx.lineWidth = 1.15 * s.sc;
         ctx.beginPath(); ctx.moveTo(pp.x, pp.y); ctx.lineTo(pt.x, pt.y); ctx.stroke();
         if (taskMode === 'clip') {
-          M.dot(ctx, pt.x, pt.y, 3.3 * s.sc, C.surface, M.rgba(C.green, front ? 0.92 : 0.35), 1.5 * s.sc);
+          M.dot(ctx, pt.x, pt.y, 3.2 * s.sc, C.surface, M.rgba(C.green, front ? 0.92 : 0.35), 1.4 * s.sc);
         } else {
-          M.dot(ctx, pt.x, pt.y, 2.7 * s.sc, M.rgba(col, front ? 0.75 : 0.25));
+          M.dot(ctx, pt.x, pt.y, 2.6 * s.sc, M.rgba(col, front ? 0.75 : 0.25));
         }
       }
-      M.dot(ctx, pp.x, pp.y, (front ? 3.8 : 2.7) * s.sc, M.rgba(col, front ? 0.92 : 0.30), front ? C.surface : null, 0.9);
+      M.dot(ctx, pp.x, pp.y, (front ? 3.7 : 2.6) * s.sc, M.rgba(col, front ? 0.92 : 0.30), front ? C.surface : null, 0.9);
     }
 
     var caption = {
-      supervised: 'Supervised: points move toward explicit class labels ("Dog", "Cat")',
-      autoencode: 'Autoencoder: points organize along smooth pose & appearance manifolds',
-      contrastive: 'Contrastive: pull augmented views together, push instances apart',
-      clip: 'CLIP: align image (\u25cf) and text caption (\u25cb) embeddings on the sphere'
+      supervised: 'Supervised: points cluster at class poles ("Dog", "Cat")',
+      autoencode: 'Autoencoder: smooth pose & appearance manifolds',
+      contrastive: 'Contrastive: pull augmented views, push instances apart',
+      clip: 'CLIP: align image (\u25cf) & text caption (\u25cb) embeddings'
     }[taskMode];
-    M.pill(ctx, s, caption, 8 * s.sc, 13 * s.sc, { size: 7.9 });
+    M.pill(ctx, s, caption, cx, ry + rh - 12 * s.sc, { align: 'center', color: C.ink, size: 7.5 });
   }
 
-  function drawThumb(ctx, kind, idx, x, y, sz, borderCol, s) {
-    var img = thumbImgs[kind][idx % thumbImgs[kind].length];
-    ctx.save();
-    ctx.beginPath();
-    if (ctx.roundRect) ctx.roundRect(x, y, sz, sz, 4 * s.sc); else ctx.rect(x, y, sz, sz);
-    ctx.clip();
-    if (img && img.complete && img.naturalWidth > 0) {
-      ctx.drawImage(img, x, y, sz, sz);
-    } else {
-      ctx.fillStyle = M.rgba(borderCol, 0.18);
-      ctx.fillRect(x, y, sz, sz);
-    }
-    ctx.restore();
-    ctx.strokeStyle = borderCol;
-    ctx.lineWidth = 1.25 * s.sc;
-    ctx.beginPath();
-    if (ctx.roundRect) ctx.roundRect(x, y, sz, sz, 4 * s.sc); else ctx.rect(x, y, sz, sz);
-    ctx.stroke();
-  }
-
-  function drawPhotoGroup(ctx, kind, gx, gy, gw, gh, col, active, s) {
-    ctx.save();
-    ctx.fillStyle = active ? M.rgba(col, 0.07) : M.rgba(C.border, 0.20);
-    ctx.strokeStyle = active ? M.rgba(col, 0.72) : C.border;
-    ctx.lineWidth = (active ? 1.2 : 0.9) * s.sc;
-    if (!active) ctx.setLineDash([3 * s.sc, 2 * s.sc]);
-    ctx.beginPath();
-    if (ctx.roundRect) ctx.roundRect(gx, gy, gw, gh, 4 * s.sc); else ctx.rect(gx, gy, gw, gh);
-    ctx.fill(); ctx.stroke();
-    ctx.setLineDash([]);
-
-    ctx.globalAlpha = active ? 1.0 : 0.30;
-    var gap = 5 * s.sc;
-    var sz = Math.min(gh - 8 * s.sc, (gw - 12 * s.sc - 2 * gap) / 3);
-    var totalW = 3 * sz + 2 * gap;
-    var x0 = gx + (gw - totalW) * 0.5;
-    var y0 = gy + (gh - sz) * 0.5;
-    for (var i = 0; i < 3; i++) {
-      drawThumb(ctx, kind, i, x0 + i * (sz + gap), y0, sz, col, s);
-    }
-    ctx.restore();
-  }
-
-  function drawConvSchematic(ctx, x, y, w, h, active, s) {
-    ctx.fillStyle = active ? M.rgba(C.blue, 0.07) : C.surface;
-    ctx.strokeStyle = active ? C.blue : C.border;
-    ctx.lineWidth = (active ? 1.6 : 1.0) * s.sc;
-    ctx.beginPath();
-    if (ctx.roundRect) ctx.roundRect(x, y, w, h, 4 * s.sc); else ctx.rect(x, y, w, h);
-    ctx.fill(); ctx.stroke();
-
-    ctx.fillStyle = active ? C.blue : C.muted;
-    ctx.font = M.font(s, 8.0, 600, 'sans');
-    ctx.textAlign = 'left'; ctx.textBaseline = 'top';
-    ctx.fillText('CNN: 2D Convolution', x + 6 * s.sc, y + 5 * s.sc);
-
-    /* 5x5 input grid + highlighted 3x3 sliding kernel -> 3x3 feature map */
-    var cell = Math.min((h - 24 * s.sc) / 5.2, (w * 0.42) / 5.2);
-    var gx = x + 8 * s.sc, gy = y + 19 * s.sc;
-    for (var r = 0; r < 5; r++) {
-      for (var c = 0; c < 5; c++) {
-        var inKernel = r >= 1 && r <= 3 && c >= 1 && c <= 3;
-        ctx.fillStyle = inKernel ? M.rgba(C.blue, 0.25) : C.codeBg;
-        ctx.strokeStyle = inKernel ? C.blue : C.border;
-        ctx.lineWidth = (inKernel ? 1.1 : 0.6) * s.sc;
-        ctx.fillRect(gx + c * cell, gy + r * cell, cell, cell);
-        ctx.strokeRect(gx + c * cell, gy + r * cell, cell, cell);
-      }
-    }
-
-    var fx = gx + 5 * cell + 20 * s.sc, fy = gy + cell;
-    for (var r2 = 0; r2 < 3; r2++) {
-      for (var c2 = 0; c2 < 3; c2++) {
-        var isCenter = r2 === 1 && c2 === 1;
-        ctx.fillStyle = isCenter ? C.blue : M.rgba(C.blue, 0.15);
-        ctx.strokeStyle = C.border;
-        ctx.lineWidth = 0.7 * s.sc;
-        ctx.fillRect(fx + c2 * cell, fy + r2 * cell, cell, cell);
-        ctx.strokeRect(fx + c2 * cell, fy + r2 * cell, cell, cell);
-      }
-    }
-
-    /* Projection rays from 3x3 kernel corners to active output cell */
-    ctx.strokeStyle = M.rgba(C.blue, 0.65);
-    ctx.lineWidth = 1.0 * s.sc;
-    ctx.beginPath();
-    ctx.moveTo(gx + 4 * cell, gy + 1 * cell); ctx.lineTo(fx + 1.5 * cell, fy + 1.5 * cell);
-    ctx.moveTo(gx + 4 * cell, gy + 4 * cell); ctx.lineTo(fx + 1.5 * cell, fy + 1.5 * cell);
-    ctx.stroke();
-  }
-
-  function drawAttnSchematic(ctx, x, y, w, h, active, s) {
-    ctx.fillStyle = active ? M.rgba(C.green, 0.08) : C.surface;
-    ctx.strokeStyle = active ? C.green : C.border;
-    ctx.lineWidth = (active ? 1.6 : 1.0) * s.sc;
-    ctx.beginPath();
-    if (ctx.roundRect) ctx.roundRect(x, y, w, h, 4 * s.sc); else ctx.rect(x, y, w, h);
-    ctx.fill(); ctx.stroke();
-
-    ctx.fillStyle = active ? C.green : C.muted;
-    ctx.font = M.font(s, 8.0, 600, 'sans');
-    ctx.textAlign = 'left'; ctx.textBaseline = 'top';
-    ctx.fillText('ViT: Attention Head', x + 6 * s.sc, y + 5 * s.sc);
-
-    /* 4 patch tokens on left -> Q*K^T all-to-all arcs -> contextualized tokens on right */
-    var xSrc = x + 18 * s.sc, xDst = x + w - 22 * s.sc;
-    var yTop = y + 23 * s.sc, stepY = (h - 30 * s.sc) / 3;
-    var attnW = [
-      [0.5, 0.2, 0.8, 0.1],
-      [0.2, 0.7, 0.2, 0.6],
-      [0.8, 0.2, 0.6, 0.3],
-      [0.1, 0.6, 0.3, 0.7]
-    ];
-    for (var i = 0; i < 4; i++) {
-      for (var j = 0; j < 4; j++) {
-        var aw = attnW[i][j];
-        if (aw < 0.25) continue;
-        ctx.strokeStyle = M.rgba(C.green, aw * 0.72);
-        ctx.lineWidth = (0.6 + aw * 1.8) * s.sc;
-        ctx.beginPath();
-        ctx.moveTo(xSrc + 5 * s.sc, yTop + i * stepY);
-        ctx.bezierCurveTo((xSrc + xDst) * 0.5, yTop + i * stepY, (xSrc + xDst) * 0.5, yTop + j * stepY, xDst - 5 * s.sc, yTop + j * stepY);
-        ctx.stroke();
-      }
-    }
-    for (var k = 0; k < 4; k++) {
-      M.dot(ctx, xSrc, yTop + k * stepY, 3.6 * s.sc, C.surface, C.green, 1.3 * s.sc);
-      M.dot(ctx, xDst, yTop + k * stepY, 3.8 * s.sc, C.green, C.surface, 1.0 * s.sc);
-    }
-  }
-
-  function drawSchematic() {
-    var ctx = schemStage.ctx, s = schemStage;
-    if (!s.w) return;
-    M.clear(ctx, s);
-    var padX = 10 * s.sc, fullW = s.w - 2 * padX;
-
-    /* ─── Band 1: Sensory Diet (2 distinct Dog & Cat groups with OR / +, or CLIP pairs) ─── */
-    var b1Y = 8 * s.sc, b1H = 78 * s.sc;
-    var isInputVary = varyAxis === 'input';
-    ctx.fillStyle = isInputVary ? M.rgba(C.orange, 0.08) : C.surface;
-    ctx.strokeStyle = isInputVary ? C.orange : C.border;
-    ctx.lineWidth = (isInputVary ? 1.6 : 1.0) * s.sc;
-    ctx.beginPath();
-    if (ctx.roundRect) ctx.roundRect(padX, b1Y, fullW, b1H, 4 * s.sc); else ctx.rect(padX, b1Y, fullW, b1H);
-    ctx.fill(); ctx.stroke();
-
-    ctx.fillStyle = isInputVary ? C.orange : C.muted;
-    ctx.font = M.font(s, 8.0, 600, 'sans');
-    ctx.textAlign = 'left'; ctx.textBaseline = 'top';
-    var dietTitle = taskMode === 'clip'
-      ? '1. SENSORY DIET: Multimodal Vision + Language Pairs (CLIP)'
-      : ('1. SENSORY DIET (' + (isInputVary ? 'VARIED' : 'HELD') + '): ' +
-         (dietMode === 'dogs' ? 'Dogs only' : dietMode === 'cats' ? 'Cats only' : 'Dogs + Cats'));
-    ctx.fillText(dietTitle, padX + 7 * s.sc, b1Y + 5 * s.sc);
-
-    var ty = b1Y + 21 * s.sc, grpH = 50 * s.sc;
-    if (taskMode === 'clip') {
-      /* Paired image + tokenized caption for Dog and Cat side by side */
-      var pairW = (fullW - 20 * s.sc) / 2;
-      var tSz = 42 * s.sc, clipY = ty + (grpH - tSz) * 0.5;
-      [['dogs', 0, C.blue, ['"a photo', 'of a dog"']], ['cats', 0, C.orange, ['"a photo', 'of a cat"']]].forEach(function (pr, pIdx) {
-        var px = padX + 8 * s.sc + pIdx * (pairW + 4 * s.sc);
-        drawThumb(ctx, pr[0], pr[1], px, clipY, tSz, pr[2], s);
-        ctx.fillStyle = C.green; ctx.font = M.font(s, 9, 600);
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText('\u2194', px + tSz + 9 * s.sc, clipY + tSz / 2);
-
-        var chipX = px + tSz + 18 * s.sc, chipW = Math.max(46 * s.sc, pairW - tSz - 22 * s.sc);
-        ctx.fillStyle = M.rgba(C.green, 0.12);
-        ctx.strokeStyle = M.rgba(C.green, 0.7);
-        ctx.lineWidth = 1.0 * s.sc;
-        ctx.beginPath();
-        if (ctx.roundRect) ctx.roundRect(chipX, clipY + 4 * s.sc, chipW, tSz - 8 * s.sc, 4 * s.sc);
-        else ctx.rect(chipX, clipY + 4 * s.sc, chipW, tSz - 8 * s.sc);
-        ctx.fill(); ctx.stroke();
-        ctx.fillStyle = C.ink; ctx.font = M.font(s, 7.6, 600);
-        ctx.textAlign = 'center';
-        ctx.fillText(pr[3][0], chipX + chipW / 2, clipY + tSz * 0.36);
-        ctx.fillText(pr[3][1], chipX + chipW / 2, clipY + tSz * 0.66);
-      });
-    } else {
-      /* Two distinct photo groups: [Dog 1][Dog 2][Dog 3]  OR/+  [Cat 1][Cat 2][Cat 3] */
-      var sepW = 34 * s.sc;
-      var grpW = (fullW - 14 * s.sc - sepW) * 0.5;
-      var leftGrpX = padX + 7 * s.sc;
-      var rightGrpX = leftGrpX + grpW + sepW;
-      var dogsActive = dietMode !== 'cats';
-      var catsActive = dietMode !== 'dogs';
-      drawPhotoGroup(ctx, 'dogs', leftGrpX, ty, grpW, grpH, C.blue, dogsActive, s);
-      drawPhotoGroup(ctx, 'cats', rightGrpX, ty, grpW, grpH, C.orange, catsActive, s);
-
-      var sepLabel = isInputVary ? 'OR' : '+';
-      M.pill(ctx, s, sepLabel, leftGrpX + grpW + sepW * 0.5, ty + grpH * 0.5, {
-        align: 'center',
-        color: isInputVary ? C.orange : C.muted,
-        size: 7.8
-      });
-    }
-
-    /* ─── Band 2: Computational Architecture Schematics (CNN vs. Transformer) ─── */
-    var b2Y = b1Y + b1H + 8 * s.sc, b2H = 90 * s.sc;
-    var halfW = (fullW - 8 * s.sc) / 2;
-    var cnnActive = varyAxis === 'task' || archMode === 'cnn';
-    var vitActive = varyAxis === 'task' || (varyAxis === 'arch' && archMode === 'vit');
-    drawConvSchematic(ctx, padX, b2Y, halfW, b2H, cnnActive, s);
-    drawAttnSchematic(ctx, padX + halfW + 8 * s.sc, b2Y, halfW, b2H, vitActive, s);
-
-    /* ─── Band 3: Controlled Open-Source Model Zoo Comparison (2-line entries) ─── */
-    var b3Y = b2Y + b2H + 8 * s.sc, b3H = s.h - b3Y - 8 * s.sc;
-    ctx.fillStyle = C.surface;
-    ctx.strokeStyle = C.border;
-    ctx.lineWidth = 1.1 * s.sc;
-    ctx.beginPath();
-    if (ctx.roundRect) ctx.roundRect(padX, b3Y, fullW, b3H, 4 * s.sc); else ctx.rect(padX, b3Y, fullW, b3H);
-    ctx.fill(); ctx.stroke();
-
-    var zooMap = {
-      task: {
-        head: '3. VARY OBJECTIVE (Hold Diet + Architecture):',
-        arms: [
-          ['Supervised Learning (e.g. Torchvision ResNet18)', 'Explicit category labels pull Dog & Cat poles apart', C.blue],
-          ['Self-Supervised Contrastive Learning (e.g. SimCLR)', 'Instance-augmentation invariance without category labels', C.green],
-          ['Vision-Language Contrastive Learning (e.g. CLIP)', 'Joint image\u2013caption cosine alignment on the unit sphere', C.orange]
-        ]
-      },
-      arch: {
-        head: '3. VARY ARCHITECTURE (Hold Dogs+Cats Diet + Supervised):',
-        arms: [
-          ['ResNet18 / ConvNeXt (e.g. timm)', 'Local 2D sliding filters build translation-equivariant maps', C.blue],
-          ['Vision Transformer ViT-B/16 (e.g. timm)', 'Global multi-head attention routes context across all patches', C.green]
-        ]
-      },
-      input: {
-        head: '3. VARY SENSORY DIET (Hold CNN + Contrastive Objective):',
-        arms: [
-          ['Open-IPCL \u00b7 Narrow / Single-Domain Diet (Dogs OR Cats)', 'Specializes fine-grained within-class distinctions', C.blue],
-          ['Open-IPCL \u00b7 Diverse Multi-Category Diet (Dogs + Cats)', 'Carves broader between-category axes (Konkle & Alvarez, 2022)', C.orange]
-        ]
-      }
-    }[varyAxis];
-
-    ctx.fillStyle = C.ink; ctx.font = M.font(s, 8.1, 600, 'sans');
-    ctx.textAlign = 'left'; ctx.textBaseline = 'top';
-    ctx.fillText(zooMap.head, padX + 7 * s.sc, b3Y + 6 * s.sc);
-
-    var nArms = zooMap.arms.length;
-    var rowStep = Math.max(25 * s.sc, (b3H - 23 * s.sc) / nArms);
-    for (var ai = 0; ai < nArms; ai++) {
-      var ay = b3Y + 21 * s.sc + ai * rowStep;
-      var arm = zooMap.arms[ai];
-      M.dot(ctx, padX + 11 * s.sc, ay + 4.5 * s.sc, 3.0 * s.sc, arm[2]);
-      ctx.fillStyle = C.ink; ctx.font = M.font(s, 7.9, 600, 'sans');
-      ctx.fillText(arm[0], padX + 19 * s.sc, ay);
-      ctx.fillStyle = C.muted; ctx.font = M.font(s, 7.4, 400, 'sans');
-      ctx.fillText(arm[1], padX + 19 * s.sc, ay + 11.2 * s.sc);
-    }
+  function drawFlowArrow(ctx, x0, y0, x1, y1, s) {
+    M.arrow(ctx, x0, y0, x1, y1, C.ink, 2.1 * s.sc, 7.5 * s.sc);
   }
 
   function drawAll() {
-    if (!ready) return;
-    drawSchematic(); drawSpherePanel();
+    if (!ready || !stage.w) return;
+    var ctx = stage.ctx, s = stage;
+    M.clear(ctx, s);
+    var pad = 10 * s.sc;
+
+    if (s.w >= 620) {
+      /* Single left-to-right pipeline: [1. Sensory Diet] => [2. Architecture] => [3. Objective / Hypersphere] */
+      var arrowW = 22 * s.sc;
+      var availW = s.w - 2 * pad - 2 * arrowW;
+      var w1 = Math.round(availW * 0.27);
+      var w2 = Math.round(availW * 0.27);
+      var w3 = availW - w1 - w2;
+      var hBox = s.h - 2 * pad;
+
+      var x1 = pad;
+      var x2 = x1 + w1 + arrowW;
+      var x3 = x2 + w2 + arrowW;
+      var midY = pad + hBox * 0.52;
+
+      drawDietBox(ctx, x1, pad, w1, hBox, s);
+      drawFlowArrow(ctx, x1 + w1 + 3 * s.sc, midY, x2 - 3 * s.sc, midY, s);
+      drawArchBox(ctx, x2, pad, w2, hBox, s);
+      drawFlowArrow(ctx, x2 + w2 + 3 * s.sc, midY, x3 - 3 * s.sc, midY, s);
+      drawSphereBox(ctx, x3, pad, w3, hBox, s);
+    } else {
+      /* Compact responsive layout inside the single panel on narrow viewports */
+      var topH = Math.round((s.h - 2 * pad - 20 * s.sc) * 0.44);
+      var botH = s.h - 2 * pad - 20 * s.sc - topH;
+      var arrowSm = 16 * s.sc;
+      var halfW = (s.w - 2 * pad - arrowSm) * 0.5;
+      drawDietBox(ctx, pad, pad, halfW, topH, s);
+      drawFlowArrow(ctx, pad + halfW + 2 * s.sc, pad + topH * 0.5, pad + halfW + arrowSm - 2 * s.sc, pad + topH * 0.5, s);
+      drawArchBox(ctx, pad + halfW + arrowSm, pad, halfW, topH, s);
+      drawFlowArrow(ctx, s.w * 0.5, pad + topH + 2 * s.sc, s.w * 0.5, pad + topH + 18 * s.sc, s);
+      drawSphereBox(ctx, pad, pad + topH + 20 * s.sc, s.w - 2 * pad, botH, s);
+    }
+
     var holdSummary = varyAxis === 'task'
       ? 'Sensory Diet (Dogs+Cats) + Architecture (CNN/ViT)'
       : varyAxis === 'arch'
@@ -549,9 +590,9 @@ DL4HL.register('trifecta_explorer', function (root, cfg) {
       '<div class="wread-interp"><span class="g">Holding two pressures constant while varying the third turns open-source model zoos into controlled experiments.</span></div>';
   }
 
-  schemStage.draw = drawAll; sphereStage.draw = drawAll;
+  stage.draw = drawAll;
   ready = true;
   tr.show(60);
-  schemStage.request(); sphereStage.request();
+  stage.request();
   return { destroy: function () { tr.pause(); } };
 });

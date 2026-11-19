@@ -10,7 +10,7 @@
 DL4HL.register('relative_reps', function (root, cfg) {
   var M = DL4HL, C = M.C;
   M.frame(root, cfg, {
-    fig: 8,
+    fig: 11,
     title: 'Relative representations: linear classification over natural-language anchor queries',
     hint: 'Toggle anchor queries to grow or shrink the spanned region on the sphere &middot; watch the great-circle decision boundary &amp; accuracy update &middot; drag the 3D sphere'
   });

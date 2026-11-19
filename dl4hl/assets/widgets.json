@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0",
+  "version": "0.3.1",
   "sections": [
     { "id": "nonlinearity", "num": 1, "title": "Depth, Nonlinearity, & Disentanglement" },
     { "id": "tabular", "num": 2, "title": "Deep Learning on Tabular Data" },
@@ -10,12 +10,41 @@
   ],
   "widgets": [
     {
-      "name": "activation_splines",
+      "name": "deep_mlp",
       "fig": 1,
       "section": "nonlinearity",
-      "title": "Bending the line: nonlinear activations vs. linear collapse",
-      "hint": "Switch activation between Linear, ReLU, GELU, and Tanh &middot; press play to optimize hidden hinges &middot; drag knot handles along the axis",
-      "pitch": "Stacking linear units always collapses back into a single straight line. Inserting nonlinear hinges (ReLU, GELU, Tanh) lets hidden units bend locally around developmental curves.",
+      "title": "What makes a deep network deep: stacking layers vs. adding bends",
+      "hint": "Compare 0 Hidden (Part-1 Perceptron), 1 Hidden, and 2 Hidden layers &middot; switch Unit bend to Linear (no bend) to see stacked layers collapse into one straight line &middot; press play to watch training from scratch",
+      "pitch": "Stacking layers without bends inside the units collapses back to Part 1's single straight line. Adding bends lets one layer place flat creases, while a second layer folds an already-folded space to carve nested boundaries.",
+      "animated": true,
+      "modes": ["sim"],
+      "params": [
+        { "key": "depth", "type": "int", "default": 2, "min": 0, "max": 2, "doc": "Number of hidden layers (0, 1, or 2)" },
+        { "key": "width", "type": "int", "default": 4, "min": 3, "max": 8, "doc": "Hidden units per layer" },
+        { "key": "activation", "type": "choice", "default": "relu", "options": ["relu", "gelu", "linear"], "doc": "Hidden unit bend" },
+        { "key": "pattern", "type": "choice", "default": "bullseye", "options": ["separable", "xor", "bullseye"], "doc": "2D benchmark pattern" }
+      ]
+    },
+    {
+      "name": "manifold_untangle",
+      "fig": 2,
+      "section": "nonlinearity",
+      "title": "Deep learning as disentanglement: unknotting tangled curves layer by layer",
+      "hint": "Press play or scrub Depth to travel from input layer L0 to L4 &middot; increase Tangle turns to tighten the spiral",
+      "pitch": "Two intertwined spiral strands cannot be separated by any single flat cut in input space. Stacked layers gently loosen one loop at a time until a straight boundary separates them cleanly.",
+      "animated": true,
+      "modes": ["sim"],
+      "params": [
+        { "key": "turns", "type": "float", "default": 1.35, "min": 0.6, "max": 1.9, "step": 0.05, "doc": "Spiral tangle tightness" }
+      ]
+    },
+    {
+      "name": "activation_splines",
+      "fig": 3,
+      "section": "nonlinearity",
+      "title": "Bending the line: nonlinear hinges vs. linear collapse",
+      "hint": "Switch activation between Linear, ReLU, GELU, and Tanh &middot; press play to fit hidden hinges &middot; drag knot handles along the axis",
+      "pitch": "Combining straight-line units always produces another straight line. Giving each hidden unit a hinge or smooth bend (ReLU, GELU, Tanh) lets their sum curve locally around real developmental trajectories.",
       "animated": true,
       "modes": ["sim", "data"],
       "data_doc": "{x: number[], y: number[], xlabel?: string, ylabel?: string}",
@@ -26,11 +55,11 @@
     },
     {
       "name": "xor_fold",
-      "fig": 2,
+      "fig": 4,
       "section": "nonlinearity",
       "title": "The XOR problem: folding space so one straight line suffices",
       "hint": "Compare 0 hidden layers (linear) vs. 1 hidden layer &middot; press play to train &middot; scrub Fold morph to watch space crease",
-      "pitch": "When class identity depends on an interaction (XOR or concentric rings), one hidden ReLU layer creases and folds the input plane so opposite quadrants land on the same side of a linear readout.",
+      "pitch": "When category identity depends on an interaction (XOR or concentric rings), one hidden layer of hinges creases and folds the input plane so opposite corners land on the same side of a final straight cut.",
       "animated": true,
       "modes": ["sim"],
       "params": [
@@ -39,25 +68,12 @@
       ]
     },
     {
-      "name": "manifold_untangle",
-      "fig": 3,
-      "section": "nonlinearity",
-      "title": "Untangling Christmas lights: progressive manifold disentanglement across depth",
-      "hint": "Press play or scrub Depth to travel from input layer L0 to L4 &middot; increase Tangle turns to tighten the knot",
-      "pitch": "Two intertwined spiral strands cannot be separated by any flat cut in input space. Residual ReLU blocks loosen one loop of the knot per layer until a linear probe reads out 100%.",
-      "animated": true,
-      "modes": ["sim"],
-      "params": [
-        { "key": "turns", "type": "float", "default": 1.35, "min": 0.6, "max": 1.9, "step": 0.05, "doc": "Spiral tangle tightness" }
-      ]
-    },
-    {
       "name": "mlp_backprop",
-      "fig": 4,
+      "fig": 5,
       "section": "tabular",
       "title": "Inside a tabular neural network: forward pass & error backpropagation",
       "hint": "Press play or step to run forward + backward updates &middot; modulate playback speed &middot; adjust predictor sliders to test live inputs",
-      "pitch": "Structured predictors flow forward through weighted ReLU connections to produce a prediction, then propagate residual error backward so each weight updates in proportion to its credit.",
+      "pitch": "Spreadsheet predictors flow forward through weighted connections and hinges to form a prediction, then send the prediction miss backward so each connection updates according to its share of responsibility.",
       "animated": true,
       "modes": ["sim"],
       "params": [
@@ -66,11 +82,11 @@
     },
     {
       "name": "transfer_hierarchy",
-      "fig": 5,
+      "fig": 6,
       "section": "vision",
       "title": "Transfer learning: reusing a visual hierarchy instead of starting from noise",
       "hint": "Switch regime between Frozen head, Full finetune, and Train from scratch &middot; vary Labeled sample size N",
-      "pitch": "Pretrained backbones arrive with oriented edges, textures, and 3D part detectors intact. Freezing the trunk and fitting a linear head generalizes from small samples where scratch training overfits.",
+      "pitch": "Pretrained backbones arrive with edge, texture, and 3D part detectors intact. Locking the backbone and fitting a fresh final readout generalizes from small samples where training from scratch overfits.",
       "animated": true,
       "modes": ["sim"],
       "params": [
@@ -80,25 +96,39 @@
     },
     {
       "name": "llm_explainer",
-      "fig": 6,
+      "fig": 7,
       "section": "language",
       "title": "(GPT-Style) LLMs: from subword tokens to next-token trajectories",
       "hint": "Press play to trace tokens through attention layers &middot; slide Attention head across all 12 heads &middot; drag the 3D sphere or adjust Temperature",
-      "pitch": "Words split into subword tokens and integer IDs, map to vectors, route context through causal self-attention, and trace a trajectory on the unit sphere toward the next token.",
+      "pitch": "Words split into subword pieces and lookup IDs, map to number lists, gather context from earlier words through attention heads, and trace a path on the unit sphere toward the next word.",
       "animated": true,
       "modes": ["sim", "data"],
       "data_doc": "{cases: {prompt, tokens, ids, candidates, logits, cand_xyz, traj_xyz, attentions}[]}",
       "params": [
-        { "key": "temperature", "type": "float", "default": 0.8, "min": 0.2, "max": 1.8, "step": 0.05, "doc": "Softmax sampling temperature" }
+        { "key": "temperature", "type": "float", "default": 0.8, "min": 0.2, "max": 1.8, "step": 0.05, "doc": "Sampling temperature" }
+      ]
+    },
+    {
+      "name": "lora_adapter",
+      "fig": 8,
+      "section": "language",
+      "title": "Low-Rank Adaptation (LoRA): steering a frozen model through a narrow bottleneck",
+      "hint": "Press play or scrub training from zeroed start to adapted model &middot; slide Bottleneck rank to widen or pinch the side-channel &middot; switch Headline or drag the 3D sphere",
+      "pitch": "Locking the large pretrained weights in place and training a narrow hourglass side-channel steers the model's vector on the unit sphere using roughly 2% as many adjustable weights.",
+      "animated": true,
+      "modes": ["sim"],
+      "params": [
+        { "key": "rank", "type": "int", "default": 8, "min": 1, "max": 32, "doc": "LoRA bottleneck rank" },
+        { "key": "alpha", "type": "int", "default": 16, "min": 4, "max": 32, "step": 4, "doc": "LoRA nudge strength" }
       ]
     },
     {
       "name": "sae_superposition",
-      "fig": 7,
+      "fig": 9,
       "section": "language",
       "title": "Polysemantic neurons vs. monosemantic Sparse Autoencoder (SAE) latents",
       "hint": "Press play to sweep across topics and watch dense neurons mix vs. SAE latents isolate each theme &middot; click any concept spoke or toggle 2 co-active concepts",
-      "pitch": "Networks pack more sparse concepts than neurons via superposition, making single neurons polysemantic. A TopK Sparse Autoencoder expands dense activations into monosemantic latents.",
+      "pitch": "Networks pack many themes into fewer units, making single units fire for unrelated topics. A Sparse Autoencoder expands dense hidden states into a wider checklist where only a few clear themes light up per input.",
       "animated": true,
       "modes": ["sim", "data"],
       "data_doc": "{features: {id, firing_rate, sarcastic_share, top_headlines}[]}",
@@ -107,12 +137,25 @@
       ]
     },
     {
+      "name": "clip_alignment",
+      "fig": 10,
+      "section": "multimodal",
+      "title": "Multimodal alignment: matching images & text on a shared unit sphere",
+      "hint": "Press play or scrub training from random start to aligned CLIP space &middot; click any row in the 5\u00d75 similarity table to highlight its image\u2013caption pair on the 3D sphere &middot; drag the sphere to rotate",
+      "pitch": "Contrastive training (CLIP / SigLIP) pulls paired pictures and captions together along the diagonal of the similarity table while pushing mismatched pairs apart around the unit sphere.",
+      "animated": true,
+      "modes": ["sim"],
+      "params": [
+        { "key": "scale", "type": "float", "default": 8.0, "min": 2.0, "max": 18.0, "step": 1.0, "doc": "Similarity score sharpness" }
+      ]
+    },
+    {
       "name": "relative_reps",
-      "fig": 8,
+      "fig": 11,
       "section": "multimodal",
       "title": "Relative representations: linear classification over natural-language anchor queries",
       "hint": "Toggle anchor queries to grow or shrink the spanned region on the sphere &middot; watch the great-circle decision boundary &amp; accuracy update &middot; drag the 3D sphere",
-      "pitch": "Projecting CLIP image embeddings onto their cosine similarities with natural-language anchor queries creates a low-dimensional subspace whose linear classifier weights read out over words.",
+      "pitch": "Scoring each image by its similarity to plain-English anchor phrases turns hundreds of unnamed coordinates into a small table where every classifier weight attaches directly to a readable phrase.",
       "animated": false,
       "modes": ["sim", "data"],
       "data_doc": "{queries: string[], query_xyz: number[][], img_xyz: number[][], sim: number[][], y: int[], class_names: string[]}",
@@ -122,11 +165,11 @@
     },
     {
       "name": "layerwise_readout",
-      "fig": 9,
+      "fig": 12,
       "section": "encoding",
       "title": "Encoding & decoding across network depth: probing a Vision Transformer",
       "hint": "Press play or scrub Layer to move from the patch stem to the final norm &middot; toggle right view between Beauty scatter and Layer RDM",
-      "pitch": "Cross-validated RidgeCV encoding on OASIS aesthetics and linear decoding on SimpleShapes across Vision Transformer blocks, paired with held-out scatters and layer RDMs.",
+      "pitch": "Cross-validated linear regressions on OASIS aesthetic ratings and linear classifiers on SimpleShapes across Vision Transformer layers, paired with held-out scatters and pairwise distance matrices.",
       "animated": true,
       "modes": ["sim", "data"],
       "data_doc": "{layers: string[], oasis_curves: {beauty, valence, arousal}, shapes_curve: number[], beauty_scatter: object, rdms: object}",
@@ -136,11 +179,11 @@
     },
     {
       "name": "trifecta_explorer",
-      "fig": 10,
+      "fig": 13,
       "section": "encoding",
-      "title": "Types of deep learning models: sensory diet, architecture, & objective",
-      "hint": "Choose which Trifecta factor to vary &middot; inspect the Input, Architecture, &amp; Model-Zoo schematic &middot; press play or drag the 3D hypersphere",
-      "pitch": "Compare how supervised, autoencoder, contrastive, and CLIP objectives sculpt the hypersphere alongside convolutional vs. attention schematics and dog/cat sensory diets.",
+      "title": "Types of deep learning models: sensory diet \u21d2 architecture \u21d2 objective",
+      "hint": "Choose which Trifecta factor to vary &middot; click any opportunistic experiment card beneath the sphere or use the toggles &middot; press play or drag the 3D hypersphere",
+      "pitch": "Single-panel left-to-right pipeline from Sensory Diet to Computational Architecture to the Latent Hypersphere, paired with opportunistic model-zoo controls below.",
       "animated": true,
       "modes": ["sim"],
       "params": [

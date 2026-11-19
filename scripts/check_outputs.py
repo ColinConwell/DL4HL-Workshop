@@ -41,7 +41,7 @@ assert len(figure_cells) == len(figure_blocks)
 assert all(cell.metadata.get("cellView") == "form" for cell in figure_cells), "Colab plot folding lost"
 
 takeaways = re.findall(r'title="Takeaway #\d+"}\n(.*?)\n:::', source, re.S)
-closing = source.split("## The Ten Takeaways\n")[1].split("## The Whole Toolkit")[0]
+closing = source.split("# Wrap-Up + Takeaways\n")[1].split("## The Whole Toolkit")[0]
 assert len(takeaways) == 10, f"Expected 10 takeaways, got {len(takeaways)}"
 assert all(f"{i}. {text}" in closing for i, text in enumerate(takeaways, 1)), "Closing takeaways drifted"
 
@@ -55,8 +55,9 @@ for line in source.splitlines():
 assert not stack, f"Unclosed Markdown containers: {stack}"
 
 widget_blocks = [block for block in blocks if re.search(r"^show\(", block, re.M)]
-assert len(widget_blocks) == 9, f"Expected 9 interactive widgets, got {len(widget_blocks)}"
+assert len(widget_blocks) == 12, f"Expected 12 interactive widgets, got {len(widget_blocks)}"
 assert all("#| echo: false" in block or "#| code-fold: true" in block for block in widget_blocks), "Interactive figure code is not hidden or folded"
-assert 'class="conwell-paper-fig"' in page, "Missing Conwell et al. (2025) Figure 9A/9B embed"
+assert 'class="conwell-paper-fig"' in page, "Missing Conwell et al. (2025) Figure 12A/12B embed"
+assert "# Glossary {.unnumbered}" in source and "# Data Sources {.unnumbered}" in source, "Expected unnumbered primary Glossary and Data Sources headers"
 assert "DeepJuice" not in page and "Sim-Acela" not in page, "Unreleased package reference remains"
-print(f"PASS: {len(figure_blocks)} folded plot cells, {len(widget_blocks)} interactive widgets, Conwell (2025) figures, and 10 synchronized takeaways")
+print(f"PASS: {len(figure_blocks)} folded plot cells, {len(widget_blocks)} interactive widgets, Conwell (2025) figures, unnumbered TOC headers, and 10 synchronized takeaways")

@@ -321,7 +321,11 @@ code:not(.sourceCode) {
 .panel-tabset > .tab-content {padding:0.25rem 0; border:0;}
 main details {margin:0.8rem 0 1.2rem;}
 main details > summary {cursor:pointer; color:var(--hl-blue);}
-/* Wide result tables scroll inside their own region rather than widening the page. */
+/* Wide result tables and TorchLens SVG graphs scroll inside their own region rather than widening the page. */
 main .cell-output-display:has(table), main .quarto-table {max-width:100%;overflow-x:auto;}
+main .cell-output-display:has(> svg), main .cell-output-display:has(> p > svg) {
+  max-width:100%; overflow-x:auto; background:#ffffff;
+  border:1px solid var(--hl-rule); border-radius:4px; padding:12px; margin:0.6rem 0 1rem;
+}
 main table {display:block;max-width:100%;overflow-x:auto;}
 main :not(pre) > code {white-space:normal;overflow-wrap:anywhere;}

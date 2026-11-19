@@ -8,7 +8,7 @@
 DL4HL.register('xor_fold', function (root, cfg) {
   var M = DL4HL, C = M.C;
   M.frame(root, cfg, {
-    fig: 2,
+    fig: 4,
     title: 'The XOR problem: folding space so one straight line suffices',
     hint: 'Compare 0 hidden layers (linear) vs. 1 hidden layer &middot; press play to train &middot; scrub Fold morph to watch space crease'
   });
@@ -264,8 +264,8 @@ DL4HL.register('xor_fold', function (root, cfg) {
     vR.setDomain([-1.35, 1.35], [-1.35, 1.35]);
     M.clear(ctx, s);
     M.axes(ctx, vR, s, {
-      xlabel: H === 0 ? 'unchanged x\u2081' : 'readout direction w\u00b7h',
-      ylabel: H === 0 ? 'unchanged x\u2082' : 'orthogonal hidden axis',
+      xlabel: H === 0 ? 'unchanged input 1' : 'combined hidden score',
+      ylabel: H === 0 ? 'unchanged input 2' : 'second hidden direction',
       nx: 3, ny: 3
     });
 

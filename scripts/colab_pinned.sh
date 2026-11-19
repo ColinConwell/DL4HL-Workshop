@@ -29,7 +29,7 @@ grep -iE '^(scikit-learn|pandas|torch|transformers)==' "$WORK/pins.txt" | tr '\n
 echo "Executing $NB in python:3.12-slim (arm64) with those pins..."
 cp "$WORK/pins.txt" "$OUT/pins.txt"
 docker run --rm --platform linux/arm64 -e JOBLIB_MULTIPROCESSING=0 -e DL4HL_RUNTIME_IMAGE="native-arm64-with-pins-from-$IMAGE" -w /nb -v "$WORK:/nb:rw" -v "$OUT:/results:rw" python:3.12-slim bash -c '
-apt-get update -qq >/dev/null && apt-get install -y -qq gcc g++ git libgl1 libglib2.0-0 >/dev/null 2>&1
+apt-get update -qq >/dev/null && apt-get install -y -qq gcc g++ git graphviz libgl1 libglib2.0-0 >/dev/null 2>&1
 pip install -q uv >/dev/null 2>&1
 uv pip install --system -q -r pins.txt \
   --extra-index-url https://download.pytorch.org/whl/cpu --index-strategy unsafe-best-match
